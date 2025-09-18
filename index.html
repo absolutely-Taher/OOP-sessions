@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Day 1 — OOP in C++ (Interactive Theory)</title>
+  <style>
+    :root{
+      --bg:#0b1220; --panel:#141c2b; --accent:#4fc3f7; --accent2:#64ffda; --text:#e8eef7; --muted:#9bb0c9; --danger:#ff6b6b; --ok:#22c55e;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1220 0%, #0b1220 50%, #0e1729 100%);color:var(--text)}
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    aside{background:linear-gradient(180deg,#0f172a,#0e1525);border-right:1px solid #1f2a44;padding:16px;position:sticky;top:0;height:100vh}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 10px 25px rgba(79,195,247,.35)}
+    .brand h1{font-size:14px;margin:0;color:var(--muted);font-weight:600;letter-spacing:.5px}
+    .stats{font-size:12px;color:var(--muted);margin:12px 0 18px}
+    nav{display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:calc(100vh - 160px);padding-right:6px}
+    nav button{all:unset;display:block;padding:10px 12px;border-radius:10px;color:var(--text);cursor:pointer;border:1px solid transparent}
+    nav button.active{background:rgba(100,255,218,.1);border-color:rgba(100,255,218,.35)}
+    nav button .small{display:block;color:var(--muted);font-size:11px}
+
+    main{padding:24px 28px}
+    .topbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:14px}
+    .pill{font-size:12px;color:#0a1220;background:linear-gradient(90deg,var(--accent),var(--accent2));padding:6px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}
+    .controls{display:flex;gap:10px}
+    .btn{all:unset;padding:10px 14px;border-radius:10px;border:1px solid #24405f;background:#10223a;color:var(--text);cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04121f;border:none}
+    .btn.ghost{background:transparent;border-color:#2a4260}
+
+    .slide{background:radial-gradient(1200px 500px at 20% -20%, rgba(79,195,247,.18), transparent 60%),
+           radial-gradient(800px 400px at 120% 120%, rgba(100,255,218,.14), transparent 60%), var(--panel);
+           border:1px solid #22314b;border-radius:18px;padding:22px;margin:12px 0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    .slide h2{margin:0 0 10px}
+    .lead{color:var(--muted);margin:0 0 12px}
+    .grid{display:grid;gap:14px}
+    @media(min-width:900px){.grid{grid-template-columns:1.1fr .9fr}}
+
+    .card{border:1px solid #22314b;border-radius:14px;padding:14px;background:rgba(255,255,255,.02)}
+    .card h3{margin:0 0 8px;font-size:15px}
+    ul{margin:8px 0 0 18px}
+
+    details{border:1px dashed #355077;border-radius:12px;padding:10px;background:rgba(79,195,247,.05)}
+    details > summary{cursor:pointer;list-style:none}
+    details[open]{animation:reveal .4s ease}
+    @keyframes reveal{from{opacity:.2;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)}}
+
+    .qa{display:grid;gap:8px}
+    .qa .q{font-weight:600}
+    .ans{display:none;color:var(--muted)}
+    .reveal{all:unset;cursor:pointer;color:var(--accent2);font-weight:700}
+
+    .quiz{display:grid;gap:8px}
+    .option{padding:10px;border:1px solid #2a4260;border-radius:10px;cursor:pointer}
+    .option.correct{border-color:rgba(34,197,94,.8);box-shadow:0 0 0 2px rgba(34,197,94,.25) inset}
+    .option.wrong{border-color:rgba(255,107,107,.8);box-shadow:0 0 0 2px rgba(255,107,107,.2) inset}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;color:#04121f}
+    .badge.ok{background:linear-gradient(90deg,#34d399,#22c55e)}
+    .badge.no{background:linear-gradient(90deg,#ff8a8a,#ff6b6b)}
+
+    footer{margin:22px 0;color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <!-- The JSON prompt the app reads -->
+  <script id="sessionSpec" type="application/json">
+  {
+    "title": "Day 1 — From Zero to OOP Mindset (C++)",
+    "duration_minutes": 120,
+    "mode": "theory",
+    "objectives": [
+      "Understand program model: input → process → output + state",
+      "Think in objects: data + behavior together",
+      "Define class vs object; member vs standalone; meaning of 'this'",
+      "Explain the four OOP pillars with real-life analogies",
+      "Grasp object lifecycle (constructors/destructor) and static"
+    ],
+    "sections": [
+      {
+        "id": "program",
+        "title": "What is a Program?",
+        "time": 7,
+        "headline": "Programs transform input to output and remember state.",
+        "content": "A program transforms **input → process → output** and keeps **state** (current information). Think of any software you use: it receives input from you (clicks, text, gestures), processes that information according to its rules and logic, then produces output (screen updates, sounds, files). But programs also *remember* things between interactions—this is called **state**.\n\nState is what makes programs dynamic and responsive. Without state, every interaction would start from scratch. A music player remembers which song is playing, your progress through it, volume level, and your playlist. A game remembers your score, level, and character position.\n\nThis input-process-output model with persistent state is the foundation of all software, from simple calculators to complex web applications.",
+        "diagram": "User Input ➜ Program Brain (Rules & Logic) ➜ Output\n                     ↕\n                State (Memory)\n\nExample Flow:\n• Click 'Play' → Check current song → Start playback\n• Adjust volume → Update volume state → Change audio level\n• Skip song → Update current track → Play next song",
+        "bullets": [
+          "Input → Program (rules) → Output",
+          "State = what the program currently remembers",
+          "Examples: calculator, ticket booking, elevator"
+        ],
+        "examples": ["Coffee machine: buttons → brew → coffee; water level = state", "Music player: play/pause, volume, current track = state", "Calculator: number entry → computation → display result; memory storage = state", "Elevator: floor requests → movement logic → position changes; current floor = state"],
+        "qa": [
+          {"q":"What is state in a music player?","a":"Current song, position, volume, playlist."},
+          {"q":"Is a website a program? Why?","a":"Yes—processes inputs and produces outputs in browser/server."}
+        ],
+        "quizzes": [
+          {"prompt":"The correct flow of a program is:","options":[{"text":"Program → Input → Output","correct":false},{"text":"Input → Program → Output","correct":true},{"text":"Output → Program → Input","correct":false}],"explanation":"Programs accept input, process it according to their rules, then produce output."},
+          {"prompt":"'State' in programming best means:","options":[{"text":"What the UI looks like","correct":false},{"text":"The code files on disk","correct":false},{"text":"Current remembered information","correct":true}],"explanation":"State is the information the program currently holds in memory during execution."},
+          {"prompt":"Which is NOT a program?","options":[{"text":"A website","correct":false},{"text":"An elevator controller","correct":false},{"text":"A printed poster","correct":true}],"explanation":"A poster doesn't process input to produce output—it's static content."},
+          {"prompt":"In a video game, which represents state?","options":[{"text":"The game's source code","correct":false},{"text":"Player score and level","correct":true},{"text":"The game's graphics files","correct":false}],"explanation":"State includes dynamic information that changes during execution, like score and progress."},
+          {"prompt":"A calculator's state includes:","options":[{"text":"The current display value","correct":true},{"text":"The calculator's color","correct":false},{"text":"The user manual","correct":false}],"explanation":"State is the runtime information the program maintains, like what's currently displayed."},
+          {"prompt":"Programs without state would:","options":[{"text":"Run faster","correct":false},{"text":"Start fresh every interaction","correct":true},{"text":"Use less memory","correct":false}],"explanation":"Without state, programs couldn't remember anything between user interactions."},
+          {"prompt":"Which best describes program processing?","options":[{"text":"Random output generation","correct":false},{"text":"Rule-based transformation of input","correct":true},{"text":"Copying input to output unchanged","correct":false}],"explanation":"Programs apply logical rules and algorithms to transform input into meaningful output."}
+        ],
+        "notes": "• Start with familiar examples (phone apps, games)\n• Emphasize state with interactive demos\n• Connect to students' daily software use\n• Preview how OOP organizes this complexity",
+        "time_hint": "Intro & Examples: 3m • State Discussion: 2m • Q&A: 1m • Quiz: 1m"
+      },
+      {
+        "id": "objects",
+        "title": "Data + Operations → Think in Objects",
+        "time": 12,
+        "headline": "Group related data with the operations that make sense for it.",
+        "content": "The key insight of object-oriented thinking is to **group related data with the operations** that naturally work on that data. Instead of having data scattered in one place and functions scattered elsewhere, we keep them together as a cohesive unit.\n\nThis approach brings tremendous benefits: **clarity** (you know exactly what operations belong with what data), **fewer bugs** (related logic stays together), and **localized change** (when requirements change, you modify one focused area rather than hunting through scattered code).\n\nThink about real-world objects: a **Contact** naturally has data (name, phone, email) and behaviors (call, message, block). An **Order** has data (items, price, address) and behaviors (pay, cancel, track). This natural grouping makes code intuitive and maintainable.",
+        "diagram": "┌─────────────────┐\n│     Student     │\n├─────────────────┤\n│ Data:           │\n│ • name          │\n│ • studentID     │\n│ • gpa           │\n│ • courses[]     │\n├─────────────────┤\n│ Operations:     │\n│ • enroll()      │\n│ • updateGPA()   │\n│ • printCard()   │\n│ • graduate()    │\n└─────────────────┘",
+        "bullets": [
+          "Benefits: clarity, fewer bugs, localized change",
+          "Examples: Contact (name/phone/email + call/message/block)",
+          "Order (items/price/address + pay/cancel/track)"
+        ],
+        "examples": ["BankAccount with deposit/withdraw", "ShoppingCart with add/remove", "Document with open/save/print/close", "Timer with start/pause/stop/reset", "MediaPlayer with play/pause/skip/setVolume"],
+        "qa": [
+          {"q":"Why keep operations near data?","a":"Localizes change, clarifies responsibility, reduces bugs."},
+          {"q":"Give a general utility (standalone) example.","a":"formatCurrency or formatDate."}
+        ],
+        "quizzes": [
+          {"prompt":"Grouping operations near data improves:","options":[{"text":"Program performance","correct":false},{"text":"Code locality and clarity","correct":true},{"text":"File size","correct":false}],"explanation":"Keeping related data and operations together makes code more understandable and maintainable."},
+          {"prompt":"Which is a good standalone utility?","options":[{"text":"deposit money","correct":false},{"text":"withdraw money","correct":false},{"text":"format currency","correct":true}],"explanation":"Currency formatting is a general utility that doesn't belong to any specific object."},
+          {"prompt":"Student 'state' would include:","options":[{"text":"updateGPA method","correct":false},{"text":"student name and ID","correct":true},{"text":"enroll method","correct":false}],"explanation":"State refers to the data/attributes, while methods are the operations on that data."},
+          {"prompt":"A BankAccount operation would be:","options":[{"text":"account balance","correct":false},{"text":"deposit funds","correct":true},{"text":"account number","correct":false}],"explanation":"Operations are actions/behaviors, while balance and account number are data."},
+          {"prompt":"Object-oriented grouping reduces bugs by:","options":[{"text":"Making programs faster","correct":false},{"text":"Keeping related logic together","correct":true},{"text":"Using less memory","correct":false}],"explanation":"When related data and operations stay together, changes are localized and easier to reason about."},
+          {"prompt":"Which shows good object thinking?","options":[{"text":"All data in one file, all functions in another","correct":false},{"text":"Contact data with call/message operations","correct":true},{"text":"Random mixing of data and functions","correct":false}],"explanation":"Objects group naturally related data and operations together."},
+          {"prompt":"A ShoppingCart would NOT include:","options":[{"text":"addItem operation","correct":false},{"text":"items list data","correct":false},{"text":"formatDate utility","correct":true}],"explanation":"Date formatting is a general utility, not specific to shopping cart functionality."}
+        ],
+        "notes": "• Use concrete examples students recognize\n• Contrast with scattered procedural code\n• Emphasize natural real-world groupings\n• Distinguish object operations from utilities",
+        "time_hint": "Concept Introduction: 3m • Examples & Diagram: 4m • Benefits Discussion: 2m • Q&A: 2m • Quiz: 1m"
+      },
+      {
+        "id": "class-object",
+        "title": "Class vs Object; Member vs Standalone; 'this'",
+        "time": 15,
+        "headline": "Class = blueprint; Object = built thing; 'this' = the current object.",
+        "content": "Understanding the distinction between **class** and **object** is fundamental. A **class** is like a blueprint or template—it defines what data and operations something will have, but it's not the actual thing. An **object** is a real instance built from that blueprint.\n\nThink of a house blueprint versus actual houses built from it. The blueprint shows rooms, doors, and layout, but you can't live in the blueprint. Similarly, a Door class defines what doors can do (open, close, lock), but you need actual Door objects to interact with.\n\n**'this'** is a special keyword that means 'the current object'—when an object runs its own method, 'this' refers to that specific object. When you call `myDoor.unlock()`, inside the unlock method, 'this' points to `myDoor` specifically.",
+        "diagram": "Class: Door Blueprint\n┌─────────────────┐\n│ Door (Class)    │\n│ - isLocked      │\n│ - material      │\n│ + unlock()      │\n│ + open()        │\n└─────────────────┘\n        │\n        │ creates\n        ▼\n┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐\n│ frontDoor       │  │ backDoor        │  │ officeDoor      │\n│ - isLocked=true │  │ - isLocked=false│  │ - isLocked=true │\n│ - material=wood │  │ - material=glass│  │ - material=steel│\n└─────────────────┘  └─────────────────┘  └─────────────────┘\n     (Objects - actual instances)",
+        "bullets": [
+          "Member operations belong to an object and use its data",
+          "Standalone operations are general-purpose utilities"
+        ],
+        "examples": ["Smart lock 'unlock' acts on *this* lock", "Receipt template is a standalone utility", "Car.startEngine() works on *this* specific car", "Math.sqrt() is standalone - doesn't need a specific object", "myAccount.withdraw() affects *this* account's balance"],
+        "qa": [
+          {"q":"Define class vs object.","a":"Class is the plan; object is a real instance built from it."},
+          {"q":"When is 'this' relevant?","a":"When an object runs its own member operation (acts on itself)."}
+        ],
+        "quizzes": [
+          {"prompt":"Class is to object as:","options":[{"text":"Car is to model","correct":false},{"text":"Blueprint is to house","correct":true},{"text":"House is to blueprint","correct":false}],"explanation":"A class is the template/plan, and objects are the actual instances created from it."},
+          {"prompt":"'unlock()' on a smart lock is:","options":[{"text":"A standalone function","correct":false},{"text":"A member operation","correct":true},{"text":"A class definition","correct":false}],"explanation":"unlock() belongs to a specific lock object and operates on that lock's data."},
+          {"prompt":"'this' points to:","options":[{"text":"Any object of the class","correct":false},{"text":"The current specific object","correct":true},{"text":"The class itself","correct":false}],"explanation":"'this' refers to the specific object instance that is currently executing the method."},
+          {"prompt":"Which is a standalone utility?","options":[{"text":"car.startEngine()","correct":false},{"text":"Math.sqrt(25)","correct":true},{"text":"account.withdraw(50)","correct":false}],"explanation":"Math.sqrt() doesn't need a specific object—it's a general mathematical utility."},
+          {"prompt":"From one Door class, you can create:","options":[{"text":"Only one door object","correct":false},{"text":"Multiple different door objects","correct":true},{"text":"Only the class definition","correct":false}],"explanation":"A class is a template that can be used to create many object instances."},
+          {"prompt":"When myDoor.open() executes, 'this' refers to:","options":[{"text":"All door objects","correct":false},{"text":"The Door class","correct":false},{"text":"The myDoor object specifically","correct":true}],"explanation":"Inside the method, 'this' always refers to the specific object that called the method."},
+          {"prompt":"Member operations typically:","options":[{"text":"Work on any data","correct":false},{"text":"Use the object's own data","correct":true},{"text":"Never access data","correct":false}],"explanation":"Member operations belong to objects and primarily work with that object's data."}
+        ],
+        "notes": "• Use physical analogies (blueprint/house)\n• Demonstrate 'this' with multiple object examples\n• Contrast member vs standalone clearly\n• Show how one class → many objects",
+        "time_hint": "Class vs Object: 4m • 'this' Concept: 3m • Member vs Standalone: 3m • Examples: 3m • Q&A: 2m"
+      },
+      {
+        "id": "encapsulation",
+        "title": "Pillar 1 — Encapsulation",
+        "time": 15,
+        "headline": "Hide data; expose safe operations that enforce rules.",
+        "content": "**Encapsulation** means keeping data **private** and exposing **controlled operations** with built-in validation. Think of it like a safe: you can't directly touch the money inside, but you can use the keypad interface to make deposits and withdrawals—with the safe checking your PIN and balance first.\n\nThis provides two major benefits: **Safety** (operations validate inputs and maintain consistency) and **Flexibility** (internal implementation can change without breaking external code). A thermostat encapsulates temperature control—you can't directly manipulate the heating element, but you can set temperature through a controlled interface that enforces reasonable ranges.\n\nWithout encapsulation, any part of your program could directly modify any data, leading to invalid states and hard-to-track bugs. With it, you create clear boundaries and contracts.",
+        "diagram": "┌─────────────────────────┐\n│        Safe             │\n│  ┌─────────────────┐    │  ← Hidden internals\n│  │   Private Data  │    │\n│  │   • cash amount │    │\n│  │   • lock state  │    │\n│  └─────────────────┘    │\n│           ↕              │\n│  ┌─────────────────┐    │\n│  │ Public Interface│    │  ← Controlled access\n│  │ • deposit()     │    │\n│  │ • withdraw()    │    │\n│  │ • checkBalance()│    │\n│  └─────────────────┘    │\n└─────────────────────────┘\n\nValidation happens at the interface!",
+        "bullets": [
+          "Validation at the door; loose coupling",
+          "No direct poking of internal fields",
+          "Interface = promised operations"
+        ],
+        "examples": ["Thermostat with range checks", "Shopping cart can't set total negative", "University record validates changeMajor", "BankAccount prevents overdraft", "User password is hashed and private", "File system checks permissions before access"],
+        "qa": [
+          {"q":"Two benefits of encapsulation?","a":"Safety via validation; flexibility to change internals."},
+          {"q":"One read-only field example.","a":"Student ID or transaction history."}
+        ],
+        "quizzes": [
+          {"prompt":"Encapsulation mainly provides:","options":[{"text":"Faster CPU performance","correct":false},{"text":"Data safety and clear interfaces","correct":true},{"text":"Bigger user interfaces","correct":false}],"explanation":"Encapsulation protects data integrity and creates well-defined interaction boundaries."},
+          {"prompt":"Directly setting cart total to -$50 breaks:","options":[{"text":"Encapsulation","correct":true},{"text":"Polymorphism","correct":false},{"text":"Inheritance","correct":false}],"explanation":"Encapsulation should prevent invalid states like negative totals through controlled operations."},
+          {"prompt":"A good read-only field example:","options":[{"text":"User password hash","correct":true},{"text":"Debug log messages","correct":false},{"text":"UI theme color","correct":false}],"explanation":"Password hashes should never be directly accessible or modifiable from outside."},
+          {"prompt":"Encapsulation is like:","options":[{"text":"An open field","correct":false},{"text":"A safe with a keypad","correct":true},{"text":"A transparent box","correct":false}],"explanation":"Like a safe, encapsulation hides internals but provides controlled access through an interface."},
+          {"prompt":"Without encapsulation, data can be:","options":[{"text":"Modified safely by anyone","correct":false},{"text":"Corrupted by direct access","correct":true},{"text":"Automatically validated","correct":false}],"explanation":"Direct data access bypasses validation and can lead to invalid or corrupted states."},
+          {"prompt":"A thermostat interface should:","options":[{"text":"Allow direct heater control","correct":false},{"text":"Validate temperature ranges","correct":true},{"text":"Expose internal wiring","correct":false}],"explanation":"Good encapsulation validates inputs (like reasonable temperature ranges) before applying changes."},
+          {"prompt":"Encapsulation benefits include:","options":[{"text":"Internal changes don't break external code","correct":true},{"text":"All data becomes public","correct":false},{"text":"No validation needed","correct":false}],"explanation":"When internals are hidden, you can change implementation without affecting code that uses the object."}
+        ],
+        "notes": "• Use physical analogies (safe, thermostat)\n• Show validation examples clearly\n• Contrast with uncontrolled access\n• Emphasize interface as contract",
+        "time_hint": "Concept & Analogy: 4m • Benefits Discussion: 3m • Examples: 4m • Validation Demo: 2m • Q&A: 2m"
+      },
+      {
+        "id": "abstraction",
+        "title": "Pillar 2 — Abstraction",
+        "time": 15,
+        "headline": "Show WHAT to do, hide HOW it's done.",
+        "content": "**Abstraction** focuses on **WHAT** something does rather than **HOW** it does it. Think of a TV remote: you press 'Volume Up' and the volume increases. You don't need to understand infrared signals, digital processing, or speaker mechanics—you just need to know the *intent* and *result*.\n\nGood abstraction reduces cognitive load by hiding implementation complexity behind clear, purposeful interfaces. When you call `PaymentService.pay(amount)`, you don't need to know about credit card APIs, encryption protocols, or bank networks. You just need to know it processes a payment.\n\nThis principle allows systems to evolve—the TV manufacturer can completely change the internal electronics, but as long as the remote buttons work the same way, users aren't affected. The interface remains stable while implementation improves.",
+        "diagram": "TV Remote (Abstraction)\n┌─────────────────┐\n│ WHAT (Interface)│  ← User sees this\n│ • Volume Up     │\n│ • Channel +/-   │\n│ • Power On/Off  │\n└─────────────────┘\n        │\n        │ hides\n        ▼\n┌─────────────────┐\n│ HOW (Hidden)    │  ← Complex internals\n│ • IR protocols  │\n│ • Signal encoding│\n│ • Circuit boards │\n│ • Frequency mgmt │\n└─────────────────┘",
+        "bullets": [
+          "Good interfaces: remote, steering wheel",
+          "Users focus on intent; internals can change safely"
+        ],
+        "examples": ["PaymentService.pay(amount)", "PhotoEditor.sharpen(level)", "Maps.getRoute(options)", "Database.save(record)", "Email.send(message)", "FileSystem.createFolder(name)"],
+        "qa": [
+          {"q":"How does abstraction reduce complexity?","a":"Users focus on goals; don't deal with implementation details."},
+          {"q":"Phone abstraction example.","a":"Share sheet—sends via many apps with one interface."}
+        ],
+        "quizzes": [
+          {"prompt":"Abstraction focuses on:","options":[{"text":"Implementation details","correct":false},{"text":"What something does (intent)","correct":true},{"text":"Hardware specifications","correct":false}],"explanation":"Abstraction emphasizes the purpose and result, hiding the complexity of how it's achieved."},
+          {"prompt":"A good abstraction example:","options":[{"text":"Car engine internals","correct":false},{"text":"Steering wheel interface","correct":true},{"text":"Wiring diagrams","correct":false}],"explanation":"A steering wheel is a perfect abstraction—turn left to go left, without knowing about mechanical linkages."},
+          {"prompt":"Phone 'Share' dialog hides:","options":[{"text":"All available apps","correct":false},{"text":"Each app's specific APIs","correct":true},{"text":"Battery level","correct":false}],"explanation":"The share interface hides the complexity of each app's different sharing mechanisms behind one simple interface."},
+          {"prompt":"PaymentService.pay() abstracts:","options":[{"text":"The payment amount","correct":false},{"text":"Credit card processing complexity","correct":true},{"text":"The user interface","correct":false}],"explanation":"The pay() method hides all the complex details of payment processing, encryption, and bank communication."},
+          {"prompt":"Good abstraction allows:","options":[{"text":"Users to modify internals","correct":false},{"text":"Implementation to change safely","correct":true},{"text":"No functionality","correct":false}],"explanation":"When implementation is hidden behind a stable interface, it can be improved without affecting users."},
+          {"prompt":"A TV remote demonstrates abstraction by:","options":[{"text":"Showing all internal circuits","correct":false},{"text":"Providing simple buttons for complex operations","correct":true},{"text":"Requiring technical knowledge","correct":false}],"explanation":"Simple buttons trigger complex internal processes without the user needing to understand them."},
+          {"prompt":"Without abstraction, users would need to:","options":[{"text":"Understand all implementation details","correct":true},{"text":"Use simpler interfaces","correct":false},{"text":"Write less code","correct":false}],"explanation":"Abstraction shields users from complexity—without it, they'd need to understand every detail."}
+        ],
+        "notes": "• Use familiar device examples (remote, steering wheel)\n• Contrast interface vs implementation\n• Show how abstraction enables change\n• Connect to API design principles",
+        "time_hint": "Concept & Remote Example: 4m • Benefits Discussion: 3m • Code Examples: 4m • Interface Design: 2m • Q&A: 2m"
+      },
+      {
+        "id": "inheritance",
+        "title": "Pillar 3 — Inheritance",
+        "time": 18,
+        "headline": "A specific type is-a general type; reuse + specialize.",
+        "content": "**Inheritance** models **'is-a'** relationships where a specific type is a specialized version of a more general type. A Car *is-a* Vehicle, a SavingsAccount *is-a* BankAccount. The specific type inherits all capabilities of the general type, then adds or customizes behaviors.\n\nThis enables powerful code reuse and logical organization. All vehicles can start, stop, and accelerate—but cars might add 'shift gears' while motorcycles add 'lean into turns'. The common behaviors are inherited, specialized behaviors are added.\n\n**Important distinction**: Use inheritance for true 'is-a' relationships, but use **composition** for 'has-a' relationships. A Car *has-a* Engine (composition), but a Car *is-a* Vehicle (inheritance). Misusing inheritance just for code reuse creates confusing, brittle hierarchies.",
+        "diagram": "Inheritance Hierarchy:\n\n    ┌─────────────┐\n    │   Vehicle   │  ← Base class\n    │ + start()   │\n    │ + stop()    │\n    │ + accelerate│\n    └─────────────┘\n         │\n    ┌────┴────┐\n    │         │\n┌───▼───┐ ┌──▼──────┐\n│  Car  │ │Motorcycle│  ← Derived classes\n│+shift │ │ +lean   │\n│+honk  │ │ +wheelie│\n└───────┘ └─────────┘\n\nCar IS-A Vehicle ✓\nCar HAS-A Engine ✓ (composition)",
+        "bullets": [
+          "Use public inheritance for real is-a",
+          "Prefer composition for has-a"
+        ],
+        "examples": ["Account → Savings/Checking", "UI Control → Button/Slider", "Document → WordDoc/Spreadsheet/Presentation", "Animal → Dog/Cat/Bird", "Shape → Circle/Rectangle/Triangle", "Employee → Manager/Developer/Designer"],
+        "qa": [
+          {"q":"When inheritance vs composition?","a":"Use inheritance for is-a truths; composition for has-a parts."},
+          {"q":"A common misuse?","a":"Inheriting just to reuse code when relation isn't is-a."}
+        ],
+        "quizzes": [
+          {"prompt":"'Car is a Vehicle' represents:","options":[{"text":"Composition","correct":false},{"text":"Inheritance","correct":true},{"text":"Encapsulation","correct":false}],"explanation":"'Is-a' relationships are modeled with inheritance—Car inherits from Vehicle."},
+          {"prompt":"'Car has an Engine' represents:","options":[{"text":"Inheritance","correct":false},{"text":"Polymorphism","correct":false},{"text":"Composition","correct":true}],"explanation":"'Has-a' relationships use composition—Car contains an Engine object as a component."},
+          {"prompt":"Misusing inheritance often leads to:","options":[{"text":"Tighter coupling and confusing hierarchies","correct":true},{"text":"Better code reuse","correct":false},{"text":"Faster execution","correct":false}],"explanation":"Inheritance creates tight coupling—misuse leads to awkward, hard-to-maintain class hierarchies."},
+          {"prompt":"A SavingsAccount should:","options":[{"text":"Inherit from BankAccount","correct":true},{"text":"Contain a BankAccount","correct":false},{"text":"Be unrelated to BankAccount","correct":false}],"explanation":"SavingsAccount IS-A BankAccount, so inheritance is appropriate."},
+          {"prompt":"Which shows proper inheritance?","options":[{"text":"Rectangle inherits from Circle","correct":false},{"text":"Manager inherits from Employee","correct":true},{"text":"House inherits from Door","correct":false}],"explanation":"Manager IS-A Employee (specialized type), while Rectangle and Circle are different shapes, and House HAS-A Door."},
+          {"prompt":"Inheritance enables:","options":[{"text":"Code reuse and specialization","correct":true},{"text":"Data hiding only","correct":false},{"text":"Faster algorithms","correct":false}],"explanation":"Inheritance allows derived classes to reuse base class code while adding specialized behavior."},
+          {"prompt":"A common inheritance mistake:","options":[{"text":"Using it for true is-a relationships","correct":false},{"text":"Inheriting just to reuse code","correct":true},{"text":"Creating base classes","correct":false}],"explanation":"Inheritance should model genuine is-a relationships, not just be a way to share code."}
+        ],
+        "notes": "• Emphasize is-a vs has-a distinction\n• Use clear hierarchical examples\n• Warn against inheritance misuse\n• Show composition alternative",
+        "time_hint": "Is-a vs Has-a: 5m • Hierarchy Examples: 4m • Inheritance Benefits: 3m • Composition Alternative: 3m • Common Mistakes: 2m • Q&A: 1m"
+      },
+      {
+        "id": "polymorphism",
+        "title": "Pillar 4 — Polymorphism",
+        "time": 18,
+        "headline": "One interface, many forms.",
+        "content": "**Polymorphism** means 'many forms'—one interface that works with different types, each providing their own specific implementation. When you call `shape.area()`, the same method call produces different behavior: circles use πr², rectangles use length×width, triangles use ½×base×height.\n\nThis is incredibly powerful because you can write **general code** that works with families of related types. A drawing program can have an array of shapes and call `draw()` on each one, without knowing or caring whether each shape is a circle, rectangle, or triangle. Each shape handles drawing itself appropriately.\n\nWithout polymorphism, you'd need endless if-else chains checking types and calling different methods. With it, you write the general logic once and let each type handle its own specifics.",
+        "diagram": "Polymorphic Interface:\n\n     ┌─────────────┐\n     │   Shape     │  ← Common interface\n     │ + area()    │\n     │ + draw()    │\n     └─────────────┘\n          ▲\n     ┌────┼────┐\n     │    │    │\n ┌───▼┐ ┌─▼──┐ ┌──▼────┐\n │Circle│ │Rect│ │Triangle│\n │area: │ │area│ │ area:  │\n │ πr²  │ │l×w │ │ ½b×h  │\n └─────┘ └────┘ └───────┘\n\nSame call → Different behavior!",
+        "bullets": [
+          "Same call → type-specific behavior",
+          "Enables general logic over families of types"
+        ],
+        "examples": ["Shape.area() — circle/rect/triangle", "Notification.send() — email/SMS/push", "PaymentMethod.process() — card/wallet/crypto", "MediaFile.play() — video/audio/animation", "Document.save() — Word/PDF/HTML", "Transport.travel() — car/plane/train"],
+        "qa": [
+          {"q":"Why powerful?","a":"Add new kinds without changing existing general code."},
+          {"q":"Risk without a shared interface?","a":"Duplicated special-case branches."}
+        ],
+        "quizzes": [
+          {"prompt":"Polymorphism enables:","options":[{"text":"One interface for many types","correct":true},{"text":"One type only","correct":false},{"text":"Faster disk access","correct":false}],"explanation":"Polymorphism allows a single interface to work with multiple related types, each with their own implementation."},
+          {"prompt":"Shape.area() differs by:","options":[{"text":"Application type","correct":false},{"text":"Shape type (circle, rectangle, etc.)","correct":true},{"text":"Country location","correct":false}],"explanation":"Each shape type (circle, rectangle, triangle) implements area() calculation differently."},
+          {"prompt":"Without polymorphism, you get:","options":[{"text":"Duplicated conditional branches","correct":true},{"text":"Cleaner code","correct":false},{"text":"No bugs","correct":false}],"explanation":"Without a common interface, you need if-else chains to handle each type differently."},
+          {"prompt":"Polymorphism allows adding new types:","options":[{"text":"Without changing existing general code","correct":true},{"text":"Only with major refactoring","correct":false},{"text":"By modifying all related classes","correct":false}],"explanation":"New types can implement the interface without changing code that uses the interface."},
+          {"prompt":"A drawing program benefits from polymorphism by:","options":[{"text":"Treating all shapes uniformly","correct":true},{"text":"Only drawing circles","correct":false},{"text":"Avoiding graphics entirely","correct":false}],"explanation":"The program can call draw() on any shape without knowing the specific type—each shape draws itself."},
+          {"prompt":"PaymentMethod.process() demonstrates:","options":[{"text":"Encapsulation","correct":false},{"text":"Polymorphism","correct":true},{"text":"Inheritance only","correct":false}],"explanation":"Different payment types (card, wallet, crypto) implement process() differently through the same interface."},
+          {"prompt":"Polymorphism reduces:","options":[{"text":"Code flexibility","correct":false},{"text":"Type-checking conditionals","correct":true},{"text":"Program functionality","correct":false}],"explanation":"Instead of checking types and branching, polymorphism lets each type handle its own behavior."}
+        ],
+        "notes": "• Use concrete examples (shapes, payments)\n• Show before/after: if-else vs polymorphic\n• Emphasize extensibility benefits\n• Connect to real-world interfaces",
+        "time_hint": "Concept & Examples: 5m • Interface Benefits: 4m • Extensibility Discussion: 4m • vs Conditionals: 3m • Q&A: 2m"
+      },
+      {
+        "id": "lifecycle",
+        "title": "Object Lifecycle: Constructors & Destructor",
+        "time": 12,
+        "headline": "Objects should start valid and end cleanly.",
+        "content": "Objects have a **lifecycle**: they're born (constructed), live (used), and die (destructed). **Constructors** ensure objects start in a valid, usable state—never half-initialized or broken. **Destructors** ensure objects clean up properly when they're no longer needed, releasing resources and finalizing any commitments.\n\nThink of a hotel stay: check-in ensures you have a valid reservation and room key (constructor), you use the room (object lifetime), then check-out settles the bill and returns the key (destructor). You can't skip check-in and expect to use the room, and you shouldn't leave without checking out.\n\nConstructors can be **overloaded**—multiple ways to create the same type of object with different initial parameters. A BankAccount might be created with just an account number, or with an account number and initial balance.",
+        "diagram": "Object Lifecycle:\n\n┌─────────────┐    ┌──────────────┐    ┌─────────────┐\n│ Constructor │ → │ Object Usage │ → │ Destructor  │\n│ • Validate  │    │ • Methods    │    │ • Cleanup   │\n│ • Initialize│    │ • State      │    │ • Release   │\n│ • Allocate  │    │ • Operations │    │ • Finalize  │\n└─────────────┘    └──────────────┘    └─────────────┘\n\nHotel Analogy:\nCheck-in ────────→ Stay ────────→ Check-out\n• Valid reservation  • Use room    • Pay bill\n• Get room key      • Room service • Return key\n• Set preferences   • Amenities    • Close account",
+        "bullets": [
+          "Constructor sets valid state (may be overloaded)",
+          "Destructor releases resources"
+        ],
+        "examples": ["Reservation holds dates then frees room", "Timer schedules then cancels", "File opens for reading/writing then closes handle", "Database connection establishes then terminates", "Memory allocation then deallocation", "Network socket binds then releases port"],
+        "qa": [
+          {"q":"Why enforce validity in constructors?","a":"Prevents broken objects and later failures."},
+          {"q":"Real-world destructor moment?","a":"Returning rental keys—contract closes and charges finalize."}
+        ],
+        "quizzes": [
+          {"prompt":"Constructors should:","options":[{"text":"Allow invalid object states","correct":false},{"text":"Ensure objects start in valid state","correct":true},{"text":"Delete system files","correct":false}],"explanation":"Constructors must ensure objects are properly initialized and ready to use safely."},
+          {"prompt":"A destructor conceptually:","options":[{"text":"Adds more items to objects","correct":false},{"text":"Cleans up and releases resources","correct":true},{"text":"Logs users into systems","correct":false}],"explanation":"Destructors handle cleanup tasks like releasing memory, closing files, or finalizing transactions."},
+          {"prompt":"Overloading constructors means:","options":[{"text":"Using different constructor names","correct":false},{"text":"Same name, different parameters","correct":true},{"text":"Random object creation","correct":false}],"explanation":"Constructor overloading provides multiple ways to initialize objects with different parameter sets."},
+          {"prompt":"A BankAccount constructor might:","options":[{"text":"Validate account number format","correct":true},{"text":"Ignore all parameters","correct":false},{"text":"Delete other accounts","correct":false}],"explanation":"Constructors should validate inputs to ensure the object starts in a consistent, valid state."},
+          {"prompt":"File destructor should:","options":[{"text":"Keep file handles open","correct":false},{"text":"Close file handles","correct":true},{"text":"Create more files","correct":false}],"explanation":"File destructors must close handles to prevent resource leaks and ensure data is properly saved."},
+          {"prompt":"Objects without proper destructors may:","options":[{"text":"Leak resources","correct":true},{"text":"Run faster","correct":false},{"text":"Use less memory","correct":false}],"explanation":"Without cleanup in destructors, resources like memory, file handles, or network connections may not be released."},
+          {"prompt":"Constructor validation prevents:","options":[{"text":"All runtime errors","correct":false},{"text":"Objects starting in broken states","correct":true},{"text":"Method calls","correct":false}],"explanation":"Validation in constructors catches problems early, preventing objects from being created in unusable states."}
+        ],
+        "notes": "• Use hotel check-in/out analogy\n• Show constructor overloading examples\n• Emphasize resource management\n• Connect to real-world cleanup scenarios",
+        "time_hint": "Lifecycle Concept: 3m • Constructor Validation: 3m • Destructor Cleanup: 3m • Overloading: 2m • Q&A: 1m"
+      },
+      {
+        "id": "static",
+        "title": "Static (Shared) Data & Functions",
+        "time": 8,
+        "headline": "Class-level shared state/utilities—use sparingly.",
+        "content": "**Static** members belong to the **class itself**, not to individual objects. Think of a classroom: each student has their own notebook (instance data), but there's one shared whiteboard (static data) that all students can see and use.\n\nStatic data is shared across all instances of a class. If you have 100 Student objects, they each have their own name and grades, but they might all share a static `schoolName` or `currentSemester`. Static functions can be called without creating any objects—like utility functions that belong conceptually to the class.\n\n**Use static sparingly!** It's great for counters (tracking how many objects exist), read-only configuration, or utility functions. But overuse creates hidden global coupling that makes testing difficult and code harder to reason about.",
+        "diagram": "Static vs Instance Members:\n\n┌─────────────────────────────────┐\n│           Student Class         │\n├─────────────────────────────────┤\n│ Static (Shared):               │\n│ • schoolName = \"Tech University\"│  ← One copy for all\n│ • studentCount = 150           │\n│ • getSchoolInfo()              │\n├─────────────────────────────────┤\n│ Instance (Per Object):         │\n│ • name                         │  ← Each object has own\n│ • gpa                          │\n│ • enroll()                     │\n└─────────────────────────────────┘\n\nstudent1.name = \"Alice\"    student2.name = \"Bob\"\nstudent1.gpa = 3.8       student2.gpa = 3.2\n\nBoth share: Student::schoolName",
+        "bullets": [
+          "Great for counters, read-only config",
+          "Pitfall: global coupling if overused"
+        ],
+        "examples": ["Live object counter", "Global tax rate (read-only)", "Application version string", "Math utility functions", "Database connection pool size", "Logging level configuration"],
+        "qa": [
+          {"q":"One good use?","a":"Counting instances currently alive."},
+          {"q":"One pitfall?","a":"Hidden coupling and test brittleness."}
+        ],
+        "quizzes": [
+          {"prompt":"Static data is shared:","options":[{"text":"Per individual object","correct":false},{"text":"Across all objects of the class","correct":true},{"text":"Per source file only","correct":false}],"explanation":"Static members belong to the class itself, so all instances share the same static data."},
+          {"prompt":"Good static usage example:","options":[{"text":"Each student's individual grade","correct":false},{"text":"Count of total students created","correct":true},{"text":"Each account's private balance","correct":false}],"explanation":"Counting instances is a perfect use of static—it's class-level information, not specific to any one object."},
+          {"prompt":"Overusing static can cause:","options":[{"text":"Loose coupling between classes","correct":false},{"text":"Hidden global state and dependencies","correct":true},{"text":"Better user interfaces","correct":false}],"explanation":"Static creates global state that can make code harder to test and reason about due to hidden dependencies."},
+          {"prompt":"Static functions can be called:","options":[{"text":"Only on specific object instances","correct":false},{"text":"Without creating any objects","correct":true},{"text":"Only during construction","correct":false}],"explanation":"Static functions belong to the class, not instances, so they can be called directly on the class."},
+          {"prompt":"In the classroom analogy, static data is like:","options":[{"text":"Each student's personal notebook","correct":false},{"text":"The shared classroom whiteboard","correct":true},{"text":"Individual desk assignments","correct":false}],"explanation":"Like a whiteboard, static data is shared by all 'students' (objects) of the class."},
+          {"prompt":"A Math::sqrt() function should be:","options":[{"text":"Instance method","correct":false},{"text":"Static utility function","correct":true},{"text":"Private data member","correct":false}],"explanation":"Mathematical utilities don't need object state—they're perfect as static utility functions."},
+          {"prompt":"Static data problems include:","options":[{"text":"Easier unit testing","correct":false},{"text":"Difficulty isolating tests","correct":true},{"text":"Better encapsulation","correct":false}],"explanation":"Static state persists between tests and creates dependencies that make tests harder to isolate and run independently."}
+        ],
+        "notes": "• Use classroom whiteboard analogy\n• Show instance counter example\n• Warn about testing difficulties\n• Contrast with instance members clearly",
+        "time_hint": "Static vs Instance: 3m • Good Uses: 2m • Pitfalls: 2m • Q&A: 1m"
+      }
+    ],
+    "homework": {
+      "instructions": "Pick a domain and produce 1–2 pages (no code).",
+      "items": [
+        "List 5 classes with 3 attributes & 3 behaviors; mark which need encapsulation",
+        "Write 2 abstractions (WHAT only), draw 1 inheritance tree",
+        "Describe 1 polymorphism use-case",
+        "Specify constructor needs, destructor cleanup, and 1 static item for one class"
+      ]
+    },
+    "theme": {"primary":"#4fc3f7","secondary":"#64ffda","dark":"#0b1220"}
+  }
+  </script>
+
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <h1>OOP in C++ — Day 1</h1>
+      </div>
+      <div class="stats" id="stats"></div>
+      <nav id="toc"></nav>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <span class="pill" id="sectionPill">Theory • 120 min</span>
+        <div class="controls">
+          <button class="btn ghost" id="importBtn" title="Import JSON file">📁 Import</button>
+          <button class="btn ghost" id="exportBtn" title="Export current JSON">💾 Export</button>
+          <button class="btn ghost" id="prevBtn" title="Previous section (← key)">◀ Prev</button>
+          <button class="btn primary" id="nextBtn" title="Next section (→ key)">Next ▶</button>
+        </div>
+      </div>
+      <section id="slides"></section>
+      <footer>
+        Press <strong>Next</strong> to step through each headline. Use the ▼ toggles to reveal examples and answers.
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Load spec from localStorage or default
+    let spec;
+    try {
+      const saved = localStorage.getItem('sessionSpec');
+      spec = saved ? JSON.parse(saved) : JSON.parse(document.getElementById('sessionSpec').textContent);
+    } catch (e) {
+      spec = JSON.parse(document.getElementById('sessionSpec').textContent);
+    }
+
+    const slidesEl = document.getElementById('slides');
+    const tocEl = document.getElementById('toc');
+    const pill = document.getElementById('sectionPill');
+    const stats = document.getElementById('stats');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const importBtn = document.getElementById('importBtn');
+    const exportBtn = document.getElementById('exportBtn');
+
+    let index = 0;
+
+    function fmt(min){return `${min} min`}
+
+    // Simple markdown renderer
+    function renderMarkdown(text) {
+      if (!text) return '';
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n•\s/g, '</p><ul><li>')
+        .replace(/\n\d+\.\s/g, '</p><ol><li>')
+        .replace(/\n/g, '<br>')
+        .replace(/<\/p><ul><li>/g, '</p><ul><li>')
+        .replace(/<\/p><ol><li>/g, '</p><ol><li>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+    }
+
+    // Shuffle array utility
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function renderTOC(){
+      spec.sections.forEach((s, i)=>{
+        const b = document.createElement('button');
+        b.innerHTML = `<strong>${i+1}. ${s.title}</strong><span class="small">${fmt(s.time)}</span>`;
+        b.addEventListener('click', ()=>{index=i; renderSlide()});
+        b.id = `toc-${i}`;
+        tocEl.appendChild(b);
+      });
+    }
+
+    function setActiveTOC(){
+      [...tocEl.children].forEach((el, i)=>{
+        el.classList.toggle('active', i===index);
+      });
+    }
+
+    function quizNode(quizzes) {
+      if (!quizzes || quizzes.length === 0) return null;
+      
+      const wrap = document.createElement('div');
+      wrap.className = 'quiz card';
+      
+      const header = document.createElement('h3');
+      header.textContent = `Quiz Bank (${quizzes.length} questions)`;
+      wrap.appendChild(header);
+
+      let currentQuizIndex = 0;
+      let answered = false;
+
+      function renderCurrentQuiz() {
+        const quiz = quizzes[currentQuizIndex];
+        const quizContainer = document.getElementById('current-quiz') || document.createElement('div');
+        quizContainer.id = 'current-quiz';
+        quizContainer.innerHTML = '';
+
+        const questionDiv = document.createElement('div');
+        questionDiv.innerHTML = `<strong>Question ${currentQuizIndex + 1}:</strong> ${quiz.prompt}`;
+        questionDiv.style.marginBottom = '10px';
+        quizContainer.appendChild(questionDiv);
+
+        const shuffledOptions = shuffleArray(quiz.options);
+        shuffledOptions.forEach((opt) => {
+          const optionDiv = document.createElement('div');
+          optionDiv.className = 'option';
+          optionDiv.textContent = opt.text;
+          optionDiv.addEventListener('click', () => {
+            if (answered) return;
+            answered = true;
+            
+            // Show result for all options
+            shuffledOptions.forEach((o, i) => {
+              const optEl = quizContainer.children[i + 1];
+              if (o.correct) {
+                optEl.classList.add('correct');
+                optEl.innerHTML = `${o.text} <span class='badge ok'>correct</span>`;
+              } else {
+                optEl.classList.add('wrong');
+              }
+            });
+
+            // Show explanation
+            const explanation = document.createElement('div');
+            explanation.style.marginTop = '10px';
+            explanation.style.padding = '10px';
+            explanation.style.backgroundColor = 'rgba(100, 255, 218, 0.1)';
+            explanation.style.borderRadius = '8px';
+            explanation.style.fontSize = '14px';
+            explanation.innerHTML = `<strong>Explanation:</strong> ${quiz.explanation}`;
+            quizContainer.appendChild(explanation);
+
+            // Add next question button if more questions exist
+            if (currentQuizIndex < quizzes.length - 1) {
+              const nextBtn = document.createElement('button');
+              nextBtn.className = 'btn ghost';
+              nextBtn.textContent = 'Next Question';
+              nextBtn.style.marginTop = '10px';
+              nextBtn.addEventListener('click', () => {
+                currentQuizIndex++;
+                answered = false;
+                renderCurrentQuiz();
+              });
+              quizContainer.appendChild(nextBtn);
+            } else {
+              const doneDiv = document.createElement('div');
+              doneDiv.style.marginTop = '10px';
+              doneDiv.style.fontWeight = 'bold';
+              doneDiv.style.color = 'var(--accent2)';
+              doneDiv.textContent = 'Quiz completed! 🎉';
+              quizContainer.appendChild(doneDiv);
+            }
+          });
+          quizContainer.appendChild(optionDiv);
+        });
+
+        if (!wrap.contains(quizContainer)) {
+          wrap.appendChild(quizContainer);
+        }
+      }
+
+      renderCurrentQuiz();
+      return wrap;
+    }
+
+    function qaNode(list){
+      const wrap = document.createElement('div');
+      wrap.className = 'qa card';
+      const t = document.createElement('h3'); t.textContent = 'Check Yourself (Q&A)'; wrap.appendChild(t);
+      list.forEach(item=>{
+        const q = document.createElement('div'); q.className='q'; q.textContent = 'Q: '+item.q; wrap.appendChild(q);
+        const a = document.createElement('div'); a.className='ans'; a.textContent = 'A: '+item.a; wrap.appendChild(a);
+        const btn = document.createElement('button'); btn.className='reveal'; btn.textContent='Reveal answer';
+        btn.addEventListener('click', ()=>{ a.style.display = (a.style.display==='block'?'none':'block') });
+        wrap.appendChild(btn);
+      });
+      return wrap;
+    }
+
+    function listNode(title, items){
+      const card = document.createElement('div'); card.className = 'card';
+      const h = document.createElement('h3'); h.textContent = title; card.appendChild(h);
+      const ul = document.createElement('ul'); items.forEach(li=>{const e=document.createElement('li'); e.textContent=li; ul.appendChild(e)}); card.appendChild(ul);
+      return card;
+    }
+
+    function renderSlide(){
+      const s = spec.sections[index];
+      
+      // Update pill with progress
+      const progress = `Section ${index + 1} of ${spec.sections.length} • ~${s.time_hint || `${s.time}m`}`;
+      pill.textContent = progress;
+      
+      setActiveTOC();
+      slidesEl.innerHTML = '';
+
+      const slide = document.createElement('article'); 
+      slide.className = 'slide';
+      
+      // Header
+      const h2 = document.createElement('h2'); 
+      h2.textContent = `${index+1}. ${s.title}`; 
+      slide.appendChild(h2);
+      
+      const lead = document.createElement('p'); 
+      lead.className='lead'; 
+      lead.textContent = s.headline; 
+      slide.appendChild(lead);
+
+      // Content section (new markdown content)
+      if (s.content) {
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'content';
+        contentDiv.style.marginBottom = '20px';
+        contentDiv.innerHTML = renderMarkdown(s.content);
+        slide.appendChild(contentDiv);
+      }
+
+      // Diagram section (collapsible)
+      if (s.diagram) {
+        const diagramDetails = document.createElement('details');
+        diagramDetails.style.marginBottom = '20px';
+        const diagramSummary = document.createElement('summary'); 
+        diagramSummary.textContent = '📊 Illustration / Diagram'; 
+        diagramSummary.style.cursor = 'pointer';
+        diagramSummary.style.fontWeight = 'bold';
+        diagramSummary.style.marginBottom = '10px';
+        diagramDetails.appendChild(diagramSummary);
+        
+        const diagramBody = document.createElement('div'); 
+        diagramBody.style.padding='12px'; 
+        diagramBody.style.backgroundColor = 'rgba(79, 195, 247, 0.05)';
+        diagramBody.style.borderRadius = '8px';
+        diagramBody.style.fontFamily = 'monospace';
+        diagramBody.style.fontSize = '13px';
+        diagramBody.style.whiteSpace = 'pre-line';
+        diagramBody.style.color='var(--muted)'; 
+        diagramBody.textContent = s.diagram; 
+        diagramDetails.appendChild(diagramBody);
+        slide.appendChild(diagramDetails);
+      }
+
+      const grid = document.createElement('div'); 
+      grid.className='grid'; 
+      slide.appendChild(grid);
+
+      // Left column: bullets + examples
+      const left = document.createElement('div'); 
+      left.className='stack'; 
+      grid.appendChild(left);
+      left.appendChild(listNode('Key Points', s.bullets));
+      if(s.examples && s.examples.length){ 
+        left.appendChild(listNode('Examples', s.examples)); 
+      }
+
+      // Right column: Q&A + Quiz
+      const right = document.createElement('div'); 
+      grid.appendChild(right);
+
+      if(s.qa && s.qa.length){ 
+        right.appendChild(qaNode(s.qa)); 
+      }
+      
+      // Handle both old 'quiz' format and new 'quizzes' format
+      const quizData = s.quizzes || (s.quiz ? [s.quiz] : null);
+      if(quizData && quizData.length){ 
+        right.appendChild(quizNode(quizData)); 
+      }
+
+      // Speaker notes (collapsible)
+      if (s.notes) {
+        const notesDetails = document.createElement('details');
+        notesDetails.style.marginTop = '20px';
+        const notesSummary = document.createElement('summary'); 
+        notesSummary.textContent = '🎯 Speaker Notes'; 
+        notesSummary.style.cursor = 'pointer';
+        notesSummary.style.fontWeight = 'bold';
+        notesDetails.appendChild(notesSummary);
+        
+        const notesBody = document.createElement('div'); 
+        notesBody.style.padding='10px'; 
+        notesBody.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
+        notesBody.style.borderRadius = '6px';
+        notesBody.style.fontSize = '13px';
+        notesBody.style.color='var(--muted)'; 
+        notesBody.innerHTML = renderMarkdown(s.notes);
+        notesDetails.appendChild(notesBody);
+        slide.appendChild(notesDetails);
+      }
+
+      slidesEl.appendChild(slide);
+
+      // Homework section appears after final slide
+      if(index === spec.sections.length-1){
+        const hw = document.createElement('article'); 
+        hw.className='slide';
+        const h = document.createElement('h2'); 
+        h.textContent = 'Homework (bring to Day 2)'; 
+        hw.appendChild(h);
+        const p = document.createElement('p'); 
+        p.className='lead'; 
+        p.textContent = spec.homework.instructions; 
+        hw.appendChild(p);
+        const list = document.createElement('ul');
+        spec.homework.items.forEach(it=>{ 
+          const li=document.createElement('li'); 
+          li.textContent=it; 
+          list.appendChild(li) 
+        });
+        hw.appendChild(list);
+        slidesEl.appendChild(hw);
+      }
+
+      prevBtn.disabled = (index===0);
+      nextBtn.disabled = (index===spec.sections.length-1);
+      
+      // Smooth scroll to top
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    // Navigation functions
+    function goToPrevious() {
+      if (index > 0) {
+        index--;
+        renderSlide();
+      }
+    }
+
+    function goToNext() {
+      if (index < spec.sections.length - 1) {
+        index++;
+        renderSlide();
+      }
+    }
+
+    function revealAllAnswers() {
+      const slide = slidesEl.querySelector('.slide');
+      if (!slide) return;
+      
+      // Reveal all Q&A answers
+      const ansElements = slide.querySelectorAll('.ans');
+      ansElements.forEach(ans => {
+        ans.style.display = ans.style.display === 'block' ? 'none' : 'block';
+      });
+      
+      // Open all details elements
+      const detailsElements = slide.querySelectorAll('details');
+      detailsElements.forEach(details => {
+        details.open = !details.open;
+      });
+    }
+
+    // Event listeners
+    prevBtn.addEventListener('click', goToPrevious);
+    nextBtn.addEventListener('click', goToNext);
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
+      switch(e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          goToPrevious();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          goToNext();
+          break;
+        case 'r':
+        case 'R':
+          e.preventDefault();
+          revealAllAnswers();
+          break;
+      }
+    });
+
+    // Import/Export functionality
+    function saveSpecToLocalStorage() {
+      try {
+        localStorage.setItem('sessionSpec', JSON.stringify(spec));
+      } catch (e) {
+        console.warn('Could not save to localStorage:', e);
+      }
+    }
+
+    function exportJSON() {
+      const dataStr = JSON.stringify(spec, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${spec.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSON() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json';
+      input.style.display = 'none';
+      
+      input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const newSpec = JSON.parse(e.target.result);
+            
+            // Basic validation
+            if (!newSpec.title || !newSpec.sections || !Array.isArray(newSpec.sections)) {
+              throw new Error('Invalid JSON structure');
+            }
+            
+            spec = newSpec;
+            saveSpecToLocalStorage();
+            
+            // Reset to first slide and re-render everything
+            index = 0;
+            tocEl.innerHTML = '';
+            renderTOC();
+            renderSlide();
+            updateStats();
+            
+            alert('JSON imported successfully!');
+          } catch (error) {
+            alert('Error importing JSON: ' + error.message);
+          }
+        };
+        reader.readAsText(file);
+      });
+      
+      document.body.appendChild(input);
+      input.click();
+      document.body.removeChild(input);
+    }
+
+    exportBtn.addEventListener('click', exportJSON);
+    importBtn.addEventListener('click', importJSON);
+
+    // Stats
+    function updateStats() {
+      const total = spec.sections.reduce((sum,s)=>sum+s.time,0);
+      stats.textContent = `${spec.sections.length} sections • Planned time: ${total} min`;
+    }
+
+    // Accessibility improvements
+    function addAriaLabels() {
+      prevBtn.setAttribute('aria-label', 'Go to previous section');
+      nextBtn.setAttribute('aria-label', 'Go to next section');
+      importBtn.setAttribute('aria-label', 'Import JSON configuration file');
+      exportBtn.setAttribute('aria-label', 'Export current configuration as JSON');
+      
+      // Add focus indicators
+      const focusableElements = document.querySelectorAll('button, details summary, .option');
+      focusableElements.forEach(el => {
+        el.addEventListener('focus', () => {
+          el.style.outline = '2px solid var(--accent2)';
+          el.style.outlineOffset = '2px';
+        });
+        el.addEventListener('blur', () => {
+          el.style.outline = '';
+          el.style.outlineOffset = '';
+        });
+      });
+    }
+
+    // Initialize
+    updateStats();
+    renderTOC();
+    renderSlide();
+    addAriaLabels();
+    
+    // Save current spec to localStorage on any navigation
+    const originalGoToPrevious = goToPrevious;
+    const originalGoToNext = goToNext;
+    
+    goToPrevious = function() {
+      originalGoToPrevious();
+      saveSpecToLocalStorage();
+    };
+    
+    goToNext = function() {
+      originalGoToNext();
+      saveSpecToLocalStorage();
+    };
+
+    // Update footer with keyboard shortcuts
+    const footer = document.querySelector('footer');
+    footer.innerHTML = `
+      <strong>Navigation:</strong> Use ← → arrow keys or Next/Prev buttons to navigate. 
+      Press <strong>R</strong> to reveal all answers on current slide. 
+      Use Import/Export buttons to load different day configurations.
+    `;
+  </script>
+</body>
+</html>
