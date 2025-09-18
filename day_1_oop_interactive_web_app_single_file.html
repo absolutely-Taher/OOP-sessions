@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Day 1 — OOP in C++ (Interactive Theory)</title>
+  <style>
+    :root{
+      --bg:#0b1220; --panel:#141c2b; --accent:#4fc3f7; --accent2:#64ffda; --text:#e8eef7; --muted:#9bb0c9; --danger:#ff6b6b; --ok:#22c55e;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1220 0%, #0b1220 50%, #0e1729 100%);color:var(--text)}
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    aside{background:linear-gradient(180deg,#0f172a,#0e1525);border-right:1px solid #1f2a44;padding:16px;position:sticky;top:0;height:100vh}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 10px 25px rgba(79,195,247,.35)}
+    .brand h1{font-size:14px;margin:0;color:var(--muted);font-weight:600;letter-spacing:.5px}
+    .stats{font-size:12px;color:var(--muted);margin:12px 0 18px}
+    nav{display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:calc(100vh - 160px);padding-right:6px}
+    nav button{all:unset;display:block;padding:10px 12px;border-radius:10px;color:var(--text);cursor:pointer;border:1px solid transparent}
+    nav button.active{background:rgba(100,255,218,.1);border-color:rgba(100,255,218,.35)}
+    nav button .small{display:block;color:var(--muted);font-size:11px}
+
+    main{padding:24px 28px}
+    .topbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:14px}
+    .pill{font-size:12px;color:#0a1220;background:linear-gradient(90deg,var(--accent),var(--accent2));padding:6px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}
+    .controls{display:flex;gap:10px}
+    .btn{all:unset;padding:10px 14px;border-radius:10px;border:1px solid #24405f;background:#10223a;color:var(--text);cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04121f;border:none}
+    .btn.ghost{background:transparent;border-color:#2a4260}
+
+    .slide{background:radial-gradient(1200px 500px at 20% -20%, rgba(79,195,247,.18), transparent 60%),
+           radial-gradient(800px 400px at 120% 120%, rgba(100,255,218,.14), transparent 60%), var(--panel);
+           border:1px solid #22314b;border-radius:18px;padding:22px;margin:12px 0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    .slide h2{margin:0 0 10px}
+    .lead{color:var(--muted);margin:0 0 12px}
+    .grid{display:grid;gap:14px}
+    @media(min-width:900px){.grid{grid-template-columns:1.1fr .9fr}}
+
+    .card{border:1px solid #22314b;border-radius:14px;padding:14px;background:rgba(255,255,255,.02)}
+    .card h3{margin:0 0 8px;font-size:15px}
+    ul{margin:8px 0 0 18px}
+
+    details{border:1px dashed #355077;border-radius:12px;padding:10px;background:rgba(79,195,247,.05)}
+    details > summary{cursor:pointer;list-style:none}
+    details[open]{animation:reveal .4s ease}
+    @keyframes reveal{from{opacity:.2;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)}}
+
+    .qa{display:grid;gap:8px}
+    .qa .q{font-weight:600}
+    .ans{display:none;color:var(--muted)}
+    .reveal{all:unset;cursor:pointer;color:var(--accent2);font-weight:700}
+
+    .quiz{display:grid;gap:8px}
+    .option{padding:10px;border:1px solid #2a4260;border-radius:10px;cursor:pointer}
+    .option.correct{border-color:rgba(34,197,94,.8);box-shadow:0 0 0 2px rgba(34,197,94,.25) inset}
+    .option.wrong{border-color:rgba(255,107,107,.8);box-shadow:0 0 0 2px rgba(255,107,107,.2) inset}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;color:#04121f}
+    .badge.ok{background:linear-gradient(90deg,#34d399,#22c55e)}
+    .badge.no{background:linear-gradient(90deg,#ff8a8a,#ff6b6b)}
+
+    footer{margin:22px 0;color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <!-- The JSON prompt the app reads -->
+  <script id="sessionSpec" type="application/json">
+  {
+    "title": "Day 1 — From Zero to OOP Mindset (C++)",
+    "duration_minutes": 120,
+    "mode": "theory",
+    "objectives": [
+      "Understand program model: input → process → output + state",
+      "Think in objects: data + behavior together",
+      "Define class vs object; member vs standalone; meaning of 'this'",
+      "Explain the four OOP pillars with real-life analogies",
+      "Grasp object lifecycle (constructors/destructor) and static"
+    ],
+    "sections": [
+      {
+        "id": "program",
+        "title": "What is a Program?",
+        "time": 7,
+        "headline": "Programs transform input to output and remember state.",
+        "bullets": [
+          "Input → Program (rules) → Output",
+          "State = what the program currently remembers",
+          "Examples: calculator, ticket booking, elevator"
+        ],
+        "illustration": "Flow: Input → Program → Output with a side bubble 'State'",
+        "examples": ["Coffee machine: buttons → brew → coffee; water level = state", "Music player: play/pause, volume, current track = state"],
+        "qa": [
+          {"q":"What is state in a music player?","a":"Current song, position, volume, playlist."},
+          {"q":"Is a website a program? Why?","a":"Yes—processes inputs and produces outputs in browser/server."}
+        ],
+        "quiz": {
+          "prompt":"Pick the correct model:",
+          "options":[
+            {"text":"Program → Input → Output","correct":false},
+            {"text":"Input → Program → Output","correct":true},
+            {"text":"Output → Program → Input","correct":false}
+          ]
+        }
+      },
+      {
+        "id": "objects",
+        "title": "Data + Operations → Think in Objects",
+        "time": 12,
+        "headline": "Group related data with the operations that make sense for it.",
+        "bullets": [
+          "Benefits: clarity, fewer bugs, localized change",
+          "Examples: Contact (name/phone/email + call/message/block)",
+          "Order (items/price/address + pay/cancel/track)"
+        ],
+        "illustration": "Student box: left Data(name,id,gpa) / right Behavior(enroll,updateGpa,printCard)",
+        "examples": ["BankAccount with deposit/withdraw", "ShoppingCart with add/remove"],
+        "qa": [
+          {"q":"Why keep operations near data?","a":"Localizes change, clarifies responsibility, reduces bugs."},
+          {"q":"Give a general utility (standalone) example.","a":"formatCurrency or formatDate."}
+        ]
+      },
+      {
+        "id": "class-object",
+        "title": "Class vs Object; Member vs Standalone; 'this'",
+        "time": 15,
+        "headline": "Class = blueprint; Object = built thing; 'this' = the current object.",
+        "bullets": [
+          "Member operations belong to an object and use its data",
+          "Standalone operations are general-purpose utilities"
+        ],
+        "illustration": "Blueprint (Door class) vs three actual Door objects",
+        "examples": ["Smart lock 'unlock' acts on *this* lock", "Receipt template is a standalone utility"],
+        "qa": [
+          {"q":"Define class vs object.","a":"Class is the plan; object is a real instance built from it."},
+          {"q":"When is 'this' relevant?","a":"When an object runs its own member operation (acts on itself)."}
+        ]
+      },
+      {
+        "id": "encapsulation",
+        "title": "Pillar 1 — Encapsulation",
+        "time": 15,
+        "headline": "Hide data; expose safe operations that enforce rules.",
+        "bullets": [
+          "Validation at the door; loose coupling",
+          "No direct poking of internal fields",
+          "Interface = promised operations"
+        ],
+        "illustration": "Safe + keypad → deposit/withdraw with checks",
+        "examples": ["Thermostat with range checks", "Shopping cart can't set total negative", "University record validates changeMajor"],
+        "qa": [
+          {"q":"Two benefits of encapsulation?","a":"Safety via validation; flexibility to change internals."},
+          {"q":"One read-only field example.","a":"Student ID or transaction history."}
+        ]
+      },
+      {
+        "id": "abstraction",
+        "title": "Pillar 2 — Abstraction",
+        "time": 15,
+        "headline": "Show WHAT to do, hide HOW it's done.",
+        "bullets": [
+          "Good interfaces: remote, steering wheel",
+          "Users focus on intent; internals can change safely"
+        ],
+        "illustration": "Remote buttons vs hidden IR logic",
+        "examples": ["PaymentService.pay(amount)", "PhotoEditor.sharpen(level)", "Maps.getRoute(options)"],
+        "qa": [
+          {"q":"How does abstraction reduce complexity?","a":"Users focus on goals; don't deal with implementation details."},
+          {"q":"Phone abstraction example.","a":"Share sheet—sends via many apps with one interface."}
+        ]
+      },
+      {
+        "id": "inheritance",
+        "title": "Pillar 3 — Inheritance",
+        "time": 18,
+        "headline": "A specific type is-a general type; reuse + specialize.",
+        "bullets": [
+          "Use public inheritance for real is-a",
+          "Prefer composition for has-a"
+        ],
+        "illustration": "Vehicle → Car/Motorcycle; Document → Word/Sheet/Slides",
+        "examples": ["Account → Savings/Checking", "UI Control → Button/Slider"],
+        "qa": [
+          {"q":"When inheritance vs composition?","a":"Use inheritance for is-a truths; composition for has-a parts."},
+          {"q":"A common misuse?","a":"Inheriting just to reuse code when relation isn't is-a."}
+        ]
+      },
+      {
+        "id": "polymorphism",
+        "title": "Pillar 4 — Polymorphism",
+        "time": 18,
+        "headline": "One interface, many forms.",
+        "bullets": [
+          "Same call → type-specific behavior",
+          "Enables general logic over families of types"
+        ],
+        "illustration": "Print() on Word/Sheet/Slides; Pay() via card/wallet/gift",
+        "examples": ["Shape.area() — circle/rect/triangle", "Notification.send() — email/SMS/push"],
+        "qa": [
+          {"q":"Why powerful?","a":"Add new kinds without changing existing general code."},
+          {"q":"Risk without a shared interface?","a":"Duplicated special-case branches."}
+        ]
+      },
+      {
+        "id": "lifecycle",
+        "title": "Object Lifecycle: Constructors & Destructor",
+        "time": 12,
+        "headline": "Objects should start valid and end cleanly.",
+        "bullets": [
+          "Constructor sets valid state (may be overloaded)",
+          "Destructor releases resources"
+        ],
+        "illustration": "Hotel: check-in → stay → check-out",
+        "examples": ["Reservation holds dates then frees room", "Timer schedules then cancels"],
+        "qa": [
+          {"q":"Why enforce validity in constructors?","a":"Prevents broken objects and later failures."},
+          {"q":"Real-world destructor moment?","a":"Returning rental keys—contract closes and charges finalize."}
+        ]
+      },
+      {
+        "id": "static",
+        "title": "Static (Shared) Data & Functions",
+        "time": 8,
+        "headline": "Class-level shared state/utilities—use sparingly.",
+        "bullets": [
+          "Great for counters, read-only config",
+          "Pitfall: global coupling if overused"
+        ],
+        "illustration": "Classroom whiteboard (shared) vs notebooks (per object)",
+        "examples": ["Live object counter", "Global tax rate (read-only)"],
+        "qa": [
+          {"q":"One good use?","a":"Counting instances currently alive."},
+          {"q":"One pitfall?","a":"Hidden coupling and test brittleness."}
+        ]
+      }
+    ],
+    "homework": {
+      "instructions": "Pick a domain and produce 1–2 pages (no code).",
+      "items": [
+        "List 5 classes with 3 attributes & 3 behaviors; mark which need encapsulation",
+        "Write 2 abstractions (WHAT only), draw 1 inheritance tree",
+        "Describe 1 polymorphism use-case",
+        "Specify constructor needs, destructor cleanup, and 1 static item for one class"
+      ]
+    },
+    "theme": {"primary":"#4fc3f7","secondary":"#64ffda","dark":"#0b1220"}
+  }
+  </script>
+
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <h1>OOP in C++ — Day 1</h1>
+      </div>
+      <div class="stats" id="stats"></div>
+      <nav id="toc"></nav>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <span class="pill" id="sectionPill">Theory • 120 min</span>
+        <div class="controls">
+          <button class="btn ghost" id="prevBtn">◀ Prev</button>
+          <button class="btn primary" id="nextBtn">Next ▶</button>
+        </div>
+      </div>
+      <section id="slides"></section>
+      <footer>
+        Press <strong>Next</strong> to step through each headline. Use the ▼ toggles to reveal examples and answers.
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const spec = JSON.parse(document.getElementById('sessionSpec').textContent);
+    const slidesEl = document.getElementById('slides');
+    const tocEl = document.getElementById('toc');
+    const pill = document.getElementById('sectionPill');
+    const stats = document.getElementById('stats');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let index = 0;
+
+    function fmt(min){return `${min} min`}
+
+    function renderTOC(){
+      spec.sections.forEach((s, i)=>{
+        const b = document.createElement('button');
+        b.innerHTML = `<strong>${i+1}. ${s.title}</strong><span class="small">${fmt(s.time)}</span>`;
+        b.addEventListener('click', ()=>{index=i; renderSlide()});
+        b.id = `toc-${i}`;
+        tocEl.appendChild(b);
+      });
+    }
+
+    function setActiveTOC(){
+      [...tocEl.children].forEach((el, i)=>{
+        el.classList.toggle('active', i===index);
+      });
+    }
+
+    function quizNode(quiz){
+      const wrap = document.createElement('div');
+      wrap.className = 'quiz card';
+      const q = document.createElement('div');
+      q.innerHTML = `<strong>Quick Quiz:</strong> ${quiz.prompt}`;
+      wrap.appendChild(q);
+      quiz.options.forEach((opt)=>{
+        const o = document.createElement('div');
+        o.className = 'option';
+        o.textContent = opt.text;
+        o.addEventListener('click', ()=>{
+          if(opt.correct){o.classList.add('correct'); o.innerHTML = `${opt.text} <span class='badge ok'>correct</span>`}
+          else{o.classList.add('wrong'); o.innerHTML = `${opt.text} <span class='badge no'>try again</span>`}
+        });
+        wrap.appendChild(o);
+      });
+      return wrap;
+    }
+
+    function qaNode(list){
+      const wrap = document.createElement('div');
+      wrap.className = 'qa card';
+      const t = document.createElement('h3'); t.textContent = 'Check Yourself (Q&A)'; wrap.appendChild(t);
+      list.forEach(item=>{
+        const q = document.createElement('div'); q.className='q'; q.textContent = 'Q: '+item.q; wrap.appendChild(q);
+        const a = document.createElement('div'); a.className='ans'; a.textContent = 'A: '+item.a; wrap.appendChild(a);
+        const btn = document.createElement('button'); btn.className='reveal'; btn.textContent='Reveal answer';
+        btn.addEventListener('click', ()=>{ a.style.display = (a.style.display==='block'?'none':'block') });
+        wrap.appendChild(btn);
+      });
+      return wrap;
+    }
+
+    function listNode(title, items){
+      const card = document.createElement('div'); card.className = 'card';
+      const h = document.createElement('h3'); h.textContent = title; card.appendChild(h);
+      const ul = document.createElement('ul'); items.forEach(li=>{const e=document.createElement('li'); e.textContent=li; ul.appendChild(e)}); card.appendChild(ul);
+      return card;
+    }
+
+    function renderSlide(){
+      const s = spec.sections[index];
+      pill.textContent = `${spec.mode[0].toUpperCase()+spec.mode.slice(1)} • ${spec.duration_minutes} min`;
+      setActiveTOC();
+      slidesEl.innerHTML = '';
+
+      const slide = document.createElement('article'); slide.className = 'slide';
+      const h2 = document.createElement('h2'); h2.textContent = `${index+1}. ${s.title}`; slide.appendChild(h2);
+      const lead = document.createElement('p'); lead.className='lead'; lead.textContent = s.headline; slide.appendChild(lead);
+
+      const grid = document.createElement('div'); grid.className='grid'; slide.appendChild(grid);
+
+      // Left column: bullets + examples
+      const left = document.createElement('div'); left.className='stack'; grid.appendChild(left);
+      left.appendChild(listNode('Key Points', s.bullets));
+      if(s.examples && s.examples.length){ left.appendChild(listNode('Examples', s.examples)); }
+
+      // Illustration / expandable details on right
+      const right = document.createElement('div'); grid.appendChild(right);
+      const det = document.createElement('details');
+      const sum = document.createElement('summary'); sum.textContent = 'Illustration / Diagram'; det.appendChild(sum);
+      const dBody = document.createElement('div'); dBody.style.padding='8px 2px'; dBody.style.color='var(--muted)'; dBody.textContent = s.illustration; det.appendChild(dBody);
+      right.appendChild(det);
+
+      if(s.qa){ right.appendChild(qaNode(s.qa)); }
+      if(s.quiz){ right.appendChild(quizNode(s.quiz)); }
+
+      slidesEl.appendChild(slide);
+
+      // Homework section appears after final slide
+      if(index === spec.sections.length-1){
+        const hw = document.createElement('article'); hw.className='slide';
+        const h = document.createElement('h2'); h.textContent = 'Homework (bring to Day 2)'; hw.appendChild(h);
+        const p = document.createElement('p'); p.className='lead'; p.textContent = spec.homework.instructions; hw.appendChild(p);
+        const list = document.createElement('ul');
+        spec.homework.items.forEach(it=>{ const li=document.createElement('li'); li.textContent=it; list.appendChild(li) });
+        hw.appendChild(list);
+        slidesEl.appendChild(hw);
+      }
+
+      prevBtn.disabled = (index===0);
+      nextBtn.disabled = (index===spec.sections.length-1);
+    }
+
+    prevBtn.addEventListener('click', ()=>{ if(index>0){ index--; renderSlide(); window.scrollTo({top:0,behavior:'smooth'}) } });
+    nextBtn.addEventListener('click', ()=>{ if(index<spec.sections.length-1){ index++; renderSlide(); window.scrollTo({top:0,behavior:'smooth'}) } });
+
+    // Stats
+    const total = spec.sections.reduce((sum,s)=>sum+s.time,0);
+    stats.textContent = `${spec.sections.length} sections • Planned time: ${total} min`;
+
+    renderTOC();
+    renderSlide();
+  </script>
+</body>
+</html>
