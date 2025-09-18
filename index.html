@@ -3,16 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bruno+Ace+SC&family=Noto+Sans+Arabic:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>Day 1 — OOP in C++ (Interactive Theory)</title>
   <style>
     :root{
       --bg:#0b1220; --panel:#141c2b; --accent:#4fc3f7; --accent2:#64ffda; --text:#e8eef7; --muted:#9bb0c9; --danger:#ff6b6b; --ok:#22c55e;
     }
+    [data-theme="light"]{
+      --bg:#f6f8fb; --panel:#ffffff; --accent:#0ea5e9; --accent2:#10b981; --text:#0b1220; --muted:#4b5563; --danger:#dc2626; --ok:#16a34a;
+    }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1220 0%, #0b1220 50%, #0e1729 100%);color:var(--text)}
+    body{margin:0;font-family:"Raleway", sans-serif;font-optical-sizing:auto;font-weight:400;font-style:normal;background:linear-gradient(180deg,#0b1220 0%, #0b1220 50%, #0e1729 100%);color:var(--text)}
+    :where(button,input,select,textarea){font-family:inherit}
+    :lang(ar){font-family:"Noto Sans Arabic", "Raleway", Arial, sans-serif}
+    [data-theme="light"] body{background:linear-gradient(180deg,#f6f8fb 0%, #f6f8fb 50%, #eaf0f8 100%)}
     .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
     aside{background:linear-gradient(180deg,#0f172a,#0e1525);border-right:1px solid #1f2a44;padding:16px;position:sticky;top:0;height:100vh}
+    [data-theme="light"] aside{background:linear-gradient(180deg,#eef2f7,#e9eef6);border-right:1px solid #d4dbe8}
     .brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
     .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 10px 25px rgba(79,195,247,.35)}
     .brand h1{font-size:14px;margin:0;color:var(--muted);font-weight:600;letter-spacing:.5px}
@@ -27,22 +37,27 @@
     .pill{font-size:12px;color:#0a1220;background:linear-gradient(90deg,var(--accent),var(--accent2));padding:6px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}
     .controls{display:flex;gap:10px}
     .btn{all:unset;padding:10px 14px;border-radius:10px;border:1px solid #24405f;background:#10223a;color:var(--text);cursor:pointer}
+    [data-theme="light"] .btn{background:#f4f7fb;border-color:#c9d3e3}
     .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04121f;border:none}
     .btn.ghost{background:transparent;border-color:#2a4260}
+    [data-theme="light"] .btn.ghost{border-color:#c9d3e3}
 
     .slide{background:radial-gradient(1200px 500px at 20% -20%, rgba(79,195,247,.18), transparent 60%),
            radial-gradient(800px 400px at 120% 120%, rgba(100,255,218,.14), transparent 60%), var(--panel);
            border:1px solid #22314b;border-radius:18px;padding:22px;margin:12px 0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    [data-theme="light"] .slide{border-color:#d8e0ef;box-shadow:0 8px 30px rgba(0,0,0,.08)}
     .slide h2{margin:0 0 10px}
     .lead{color:var(--muted);margin:0 0 12px}
     .grid{display:grid;gap:14px}
     @media(min-width:900px){.grid{grid-template-columns:1.1fr .9fr}}
 
     .card{border:1px solid #22314b;border-radius:14px;padding:14px;background:rgba(255,255,255,.02)}
+    [data-theme="light"] .card{border-color:#d8e0ef;background:#ffffff}
     .card h3{margin:0 0 8px;font-size:15px}
     ul{margin:8px 0 0 18px}
 
     details{border:1px dashed #355077;border-radius:12px;padding:10px;background:rgba(79,195,247,.05)}
+    [data-theme="light"] details{border-color:#c2cfe6;background:#f6fbff}
     details > summary{cursor:pointer;list-style:none}
     details[open]{animation:reveal .4s ease}
     @keyframes reveal{from{opacity:.2;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)}}
@@ -54,6 +69,7 @@
 
     .quiz{display:grid;gap:8px}
     .option{padding:10px;border:1px solid #2a4260;border-radius:10px;cursor:pointer}
+    [data-theme="light"] .option{border-color:#c9d3e3}
     .option.correct{border-color:rgba(34,197,94,.8);box-shadow:0 0 0 2px rgba(34,197,94,.25) inset}
     .option.wrong{border-color:rgba(255,107,107,.8);box-shadow:0 0 0 2px rgba(255,107,107,.2) inset}
     .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;color:#04121f}
@@ -61,6 +77,11 @@
     .badge.no{background:linear-gradient(90deg,#ff8a8a,#ff6b6b)}
 
     footer{margin:22px 0;color:var(--muted);font-size:12px}
+
+    /* Google Fonts utility class */
+    .bebas-neue-regular{font-family:"Bebas Neue", sans-serif;font-weight:400;font-style:normal}
+
+    /* Raleway is applied globally via body. Remove heading overrides for consistency. */
   </style>
 </head>
 <body>
@@ -361,8 +382,7 @@
       <div class="topbar">
         <span class="pill" id="sectionPill">Theory • 120 min</span>
         <div class="controls">
-          <button class="btn ghost" id="importBtn" title="Import JSON file">📁 Import</button>
-          <button class="btn ghost" id="exportBtn" title="Export current JSON">💾 Export</button>
+          <button class="btn ghost" id="themeBtn" title="Toggle light/dark theme">🌓 Theme</button>
           <button class="btn ghost" id="prevBtn" title="Previous section (← key)">◀ Prev</button>
           <button class="btn primary" id="nextBtn" title="Next section (→ key)">Next ▶</button>
         </div>
@@ -390,8 +410,7 @@
     const stats = document.getElementById('stats');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const importBtn = document.getElementById('importBtn');
-    const exportBtn = document.getElementById('exportBtn');
+    const themeBtn = document.getElementById('themeBtn');
 
     let index = 0;
 
@@ -731,6 +750,11 @@
           e.preventDefault();
           goToNext();
           break;
+        case 't':
+        case 'T':
+          e.preventDefault();
+          toggleTheme();
+          break;
         case 'r':
         case 'R':
           e.preventDefault();
@@ -739,7 +763,7 @@
       }
     });
 
-    // Import/Export functionality
+    // Save spec to localStorage
     function saveSpecToLocalStorage() {
       try {
         localStorage.setItem('sessionSpec', JSON.stringify(spec));
@@ -748,79 +772,17 @@
       }
     }
 
-    function exportJSON() {
-      const dataStr = JSON.stringify(spec, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${spec.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function importJSON() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'application/json';
-      input.style.display = 'none';
-      
-      input.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const newSpec = JSON.parse(e.target.result);
-            
-            // Basic validation
-            if (!newSpec.title || !newSpec.sections || !Array.isArray(newSpec.sections)) {
-              throw new Error('Invalid JSON structure');
-            }
-            
-            spec = newSpec;
-            saveSpecToLocalStorage();
-            
-            // Reset to first slide and re-render everything
-            index = 0;
-            tocEl.innerHTML = '';
-            renderTOC();
-            renderSlide();
-            updateStats();
-            
-            alert('JSON imported successfully!');
-          } catch (error) {
-            alert('Error importing JSON: ' + error.message);
-          }
-        };
-        reader.readAsText(file);
-      });
-      
-      document.body.appendChild(input);
-      input.click();
-      document.body.removeChild(input);
-    }
-
-    exportBtn.addEventListener('click', exportJSON);
-    importBtn.addEventListener('click', importJSON);
-
     // Stats
     function updateStats() {
-      const total = spec.sections.reduce((sum,s)=>sum+s.time,0);
-      stats.textContent = `${spec.sections.length} sections • Planned time: ${total} min`;
+    const total = spec.sections.reduce((sum,s)=>sum+s.time,0);
+    stats.textContent = `${spec.sections.length} sections • Planned time: ${total} min`;
     }
 
     // Accessibility improvements
     function addAriaLabels() {
       prevBtn.setAttribute('aria-label', 'Go to previous section');
       nextBtn.setAttribute('aria-label', 'Go to next section');
-      importBtn.setAttribute('aria-label', 'Import JSON configuration file');
-      exportBtn.setAttribute('aria-label', 'Export current configuration as JSON');
+      themeBtn.setAttribute('aria-label', 'Toggle light or dark theme');
       
       // Add focus indicators
       const focusableElements = document.querySelectorAll('button, details summary, .option');
@@ -841,6 +803,7 @@
     renderTOC();
     renderSlide();
     addAriaLabels();
+    initTheme();
     
     // Save current spec to localStorage on any navigation
     const originalGoToPrevious = goToPrevious;
@@ -860,9 +823,30 @@
     const footer = document.querySelector('footer');
     footer.innerHTML = `
       <strong>Navigation:</strong> Use ← → arrow keys or Next/Prev buttons to navigate. 
-      Press <strong>R</strong> to reveal all answers on current slide. 
-      Use Import/Export buttons to load different day configurations.
+      Press <strong>T</strong> to toggle theme. Press <strong>R</strong> to reveal all answers on current slide. 
     `;
+
+    // Theme logic
+    function applyTheme(theme){
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      themeBtn.textContent = theme === 'light' ? '🌙 Dark' : '🌞 Light';
+      themeBtn.title = theme === 'light' ? 'Switch to dark theme (T key)' : 'Switch to light theme (T key)';
+    }
+
+    function initTheme(){
+      const saved = localStorage.getItem('theme');
+      const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+      const theme = saved || (prefersLight ? 'light' : 'dark');
+      applyTheme(theme);
+    }
+
+    function toggleTheme(){
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    }
+
+    themeBtn.addEventListener('click', toggleTheme);
   </script>
 </body>
 </html>
