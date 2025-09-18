@@ -16,10 +16,10 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:"Raleway", sans-serif;font-optical-sizing:auto;font-weight:400;font-style:normal;background:linear-gradient(180deg,#0b1220 0%, #0b1220 50%, #0e1729 100%);color:var(--text)}
+    body{margin:0;font-family:"Raleway", sans-serif;font-optical-sizing:auto;font-weight:400;font-style:normal;background:var(--bg);color:var(--text)}
     :where(button,input,select,textarea){font-family:inherit}
     :lang(ar){font-family:"Noto Sans Arabic", "Raleway", Arial, sans-serif}
-    [data-theme="light"] body{background:linear-gradient(180deg,#f6f8fb 0%, #f6f8fb 50%, #eaf0f8 100%)}
+    [data-theme="light"] body{background:var(--bg)}
     .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
     aside{background:linear-gradient(180deg,#0f172a,#0e1525);border-right:1px solid #1f2a44;padding:16px;position:sticky;top:0;height:100vh}
     [data-theme="light"] aside{background:linear-gradient(180deg,#eef2f7,#e9eef6);border-right:1px solid #d4dbe8}
@@ -33,11 +33,12 @@
     nav button .small{display:block;color:var(--muted);font-size:11px}
 
     main{padding:24px 28px}
-    .topbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:14px}
+    .topbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:14px;position:relative;z-index:5}
     .pill{font-size:12px;color:#0a1220;background:linear-gradient(90deg,var(--accent),var(--accent2));padding:6px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}
-    .controls{display:flex;gap:10px}
-    .btn{all:unset;padding:10px 14px;border-radius:10px;border:1px solid #24405f;background:#10223a;color:var(--text);cursor:pointer}
+    .controls{display:flex;gap:10px;pointer-events:auto}
+    .btn{all:unset;padding:10px 14px;border-radius:10px;border:1px solid #24405f;background:#10223a;color:var(--text);cursor:pointer;pointer-events:auto}
     [data-theme="light"] .btn{background:#f4f7fb;border-color:#c9d3e3}
+    #themeBtn{border:3px solid red !important; background:yellow !important; color:black !important;}
     .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04121f;border:none}
     .btn.ghost{background:transparent;border-color:#2a4260}
     [data-theme="light"] .btn.ghost{border-color:#c9d3e3}
@@ -368,6 +369,97 @@
   }
   </script>
 
+  <!-- Egyptian Arabic translations (ar) overlay by section id -->
+  <script id="i18n" type="application/json">
+  {
+    "ui": {
+      "ar": {
+        "theme": "تغيير الوضع",
+        "prev": "◀ السابق",
+        "next": "التالي ▶",
+        "qa_title": "أسئلة وإجابات",
+        "reveal": "إظهار الإجابة",
+        "diagram": "رسم توضيحي",
+        "notes": "ملاحظات للمدرِّس",
+        "quiz_bank": "بنك الأسئلة",
+        "question_of": "سؤال {n} من {total}",
+        "quiz_done": "انتهيت من الأسئلة! 🎉"
+      }
+    },
+    "sections": {
+      "program": {
+        "title": "ما هو البرنامج؟",
+        "headline": "البرامج تحوّل المدخلات إلى مخرجات وتحتفظ بالحالة.",
+        "content": "البرنامج يحوّل **مدخلات → معالجة → مخرجات** ويحافظ على **الحالة** (المعلومات الحالية). أي تطبيق تستخدمه يستقبل إدخالاتك (نقرات، كتابة)، يعالجها بقواعده، ثم يُنتج مخرجات (تحديث شاشة، صوت).\n\nالحالة هي ما يتذكره البرنامج بين تفاعلٍ وآخر. مشغّل الموسيقى يتذكر الأغنية الحالية، وموضع التشغيل، ومستوى الصوت، وقائمة التشغيل. نفس الفكرة في الألعاب والحاسبة والمواقع.",
+        "diagram": "مدخلات المستخدم ➜ عقل البرنامج (قواعد ومنطق) ➜ مخرجات\n                     ↕\n                 الحالة (الذاكرة)",
+        "bullets": [
+          "مدخلات → برنامج (قواعد) → مخرجات",
+          "الحالة = ما يتذكره البرنامج الآن",
+          "أمثلة: حاسبة، حجز تذاكر، مصعد"
+        ],
+        "examples": [
+          "ماكينة القهوة: أزرار → تحضير → قهوة؛ منسوب المياه = حالة",
+          "مشغل موسيقى: تشغيل/إيقاف، الصوت، المسار الحالي = حالة"
+        ],
+        "qa": [
+          {"q":"ما هي \"الحالة\" في مشغّل موسيقى؟","a":"الأغنية الحالية، الموضع، الصوت، قائمة التشغيل."},
+          {"q":"هل الموقع برنامج؟ ولماذا؟","a":"نعم — يعالج المدخلات ويُنتج المخرجات في المتصفح/الخادم."}
+        ]
+      },
+      "objects": {
+        "title": "بيانات + عمليات → فكّر في الكائنات",
+        "headline": "جمّع البيانات المرتبطة مع العمليات المناسبة لها.",
+        "content": "الفكرة: **نربط البيانات بالعمليات** التي تعمل عليها طبيعيًا. هذا يُحسن الوضوح ويقلل الأخطاء ويجعل التغيير موضعيًا.\n\nمثال: جهة اتصال فيها الاسم/الرقم/الإيميل + اتصل/أرسل/احظر. الطلب فيه عناصر/سعر/عنوان + ادفع/ألغِ/تتبَّع.",
+        "diagram": "طالب\nالبيانات: الاسم، الرقم، المعدل، المقررات\nالعمليات: تسجيل، تحديث المعدل، طباعة البطاقة، تخرج",
+        "bullets": ["وضوح أعلى وتقليل أخطاء وتغيير موضعي"],
+        "examples": ["حساب بنكي: إيداع/سحب", "سلة مشتريات: إضافة/إزالة"]
+      },
+      "class-object": {
+        "title": "فئة مقابل كائن؛ عضو مقابل مستقل؛ this",
+        "headline": "الفئة مخطط، الكائن نسخة حقيقية؛ this = الكائن الحالي.",
+        "content": "الفئة مثل المخطط، والكائن هو الشيء الحقيقي المبني منه. \"this\" تشير للكائن الذي ينفّذ طريقته الآن.",
+        "examples": ["قفل ذكي unlock يؤثر على هذا القفل تحديدًا"]
+      },
+      "encapsulation": {
+        "title": "الركيزة 1 — التغليف",
+        "headline": "أخفِ البيانات؛ وافتح عمليات آمنة مع تحقق.",
+        "content": "التغليف يعني إبقاء البيانات خاصة وتقديم واجهة آمنة تتحقق من القيم قبل التغيير.",
+        "examples": ["منظّم حرارة بفحوصات مدى", "سلة لا تسمح بمجموع سالب"]
+      },
+      "abstraction": {
+        "title": "الركيزة 2 — التجريد",
+        "headline": "أظهر ماذا نفعل، وأخفِ كيف يتم.",
+        "content": "التجريد يركّز على الهدف والنتيجة، ويخفي التفاصيل المعقدة خلف واجهة بسيطة.",
+        "examples": ["خدمة دفع pay(amount)"]
+      },
+      "inheritance": {
+        "title": "الركيزة 3 — الوراثة",
+        "headline": "نوع محدد هو-\"أ\" من نوع عام؛ إعادة استخدام + تخصيص.",
+        "content": "نستخدم الوراثة لعلاقة هو-\"أ\"، والتركيب لعلاقة يملك-\"أ\".",
+        "examples": ["مركبة → سيارة/دراجة"]
+      },
+      "polymorphism": {
+        "title": "الركيزة 4 — تعدد الأشكال",
+        "headline": "واجهة واحدة، أشكال متعددة.",
+        "content": "نفس النداء يُنفّذ سلوكًا مختلفًا حسب النوع، مثل area() لأشكال مختلفة.",
+        "examples": ["Shape.area()، Notification.send()"]
+      },
+      "lifecycle": {
+        "title": "دورة حياة الكائن — البُناة والمُدمّر",
+        "headline": "ابدأ صحيحًا وانتهِ بتنظيف.",
+        "content": "البنّاء يضمن صلاحية البداية، والمُدمّر يحرر الموارد عند النهاية.",
+        "examples": ["حجز يحرر الغرفة عند الانتهاء"]
+      },
+      "static": {
+        "title": "الساكن (المشترك) — بيانات ودوال",
+        "headline": "حالة/أدوات مشتركة على مستوى الفئة — بحذر.",
+        "content": "مفيد للعدادات والإعدادات العامة، لكن الإفراط يسبب ترابطًا خفيًا.",
+        "examples": ["عداد الكائنات الحية"]
+      }
+    }
+  }
+  </script>
+
   <div class="app">
     <aside>
       <div class="brand">
@@ -383,6 +475,7 @@
         <span class="pill" id="sectionPill">Theory • 120 min</span>
         <div class="controls">
           <button class="btn ghost" id="themeBtn" title="Toggle light/dark theme">🌓 Theme</button>
+          <button class="btn ghost" id="langBtn" title="Toggle language">🌐 AR</button>
           <button class="btn ghost" id="prevBtn" title="Previous section (← key)">◀ Prev</button>
           <button class="btn primary" id="nextBtn" title="Next section (→ key)">Next ▶</button>
         </div>
@@ -411,10 +504,61 @@
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const themeBtn = document.getElementById('themeBtn');
+    const langBtn = document.getElementById('langBtn');
+    const footer = document.querySelector('footer');
+    const i18n = JSON.parse(document.getElementById('i18n').textContent);
 
     let index = 0;
+    let currentLang = localStorage.getItem('lang') || 'en';
 
     function fmt(min){return `${min} min`}
+
+    function setLang(lang){
+      currentLang = lang;
+      localStorage.setItem('lang', lang);
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', lang==='ar'?'rtl':'ltr');
+      langBtn.textContent = lang==='ar' ? '🌐 EN' : '🌐 AR';
+      langBtn.title = lang==='ar' ? 'Switch language' : 'غيّر اللغة';
+      // Re-render UI text and slides
+      tocEl.innerHTML = '';
+      renderTOC();
+      renderSlide();
+      updateStats();
+      updateTopbarLabels();
+      updateButtonTexts();
+      updateFooter();
+    }
+
+    function updateTopbarLabels(){
+      if(currentLang==='ar'){
+        pill.textContent = `نظري • ${spec.duration_minutes} دقيقة`;
+        prevBtn.title = 'القسم السابق (مفتاح السهم الأيسر)';
+        nextBtn.title = 'القسم التالي (مفتاح السهم الأيمن)';
+        themeBtn.title = 'تغيير الوضع';
+      } else {
+        prevBtn.title = 'Previous section (← key)';
+        nextBtn.title = 'Next section (→ key)';
+        themeBtn.title = 'Toggle light/dark theme';
+      }
+    }
+
+    function updateButtonTexts(){
+      if(currentLang==='ar'){
+        prevBtn.textContent = '◀ السابق';
+        nextBtn.textContent = 'التالي ▶';
+      } else {
+        prevBtn.textContent = '◀ Prev';
+        nextBtn.textContent = 'Next ▶';
+      }
+    }
+
+    function getLocalizedSection(id){
+      if(currentLang!=='ar') return spec.sections.find(s=>s.id===id);
+      const base = spec.sections.find(s=>s.id===id);
+      const overlay = (i18n.sections && i18n.sections[id]) || {};
+      return Object.assign({}, base, overlay);
+    }
 
     // Simple markdown renderer
     function renderMarkdown(text) {
@@ -446,7 +590,8 @@
     function renderTOC(){
       spec.sections.forEach((s, i)=>{
         const b = document.createElement('button');
-        b.innerHTML = `<strong>${i+1}. ${s.title}</strong><span class="small">${fmt(s.time)}</span>`;
+        const localized = getLocalizedSection(s.id);
+        b.innerHTML = `<strong>${i+1}. ${localized.title}</strong><span class="small">${fmt(s.time)}</span>`;
         b.addEventListener('click', ()=>{index=i; renderSlide()});
         b.id = `toc-${i}`;
         tocEl.appendChild(b);
@@ -461,85 +606,117 @@
 
     function quizNode(quizzes) {
       if (!quizzes || quizzes.length === 0) return null;
-      
+
       const wrap = document.createElement('div');
       wrap.className = 'quiz card';
-      
+
       const header = document.createElement('h3');
-      header.textContent = `Quiz Bank (${quizzes.length} questions)`;
+      header.textContent = currentLang==='ar' ? `بنك الأسئلة (${quizzes.length} سؤال)` : `Quiz Bank (${quizzes.length} questions)`;
       wrap.appendChild(header);
 
-      let currentQuizIndex = 0;
-      let answered = false;
+      // State per question: selected index and explanation visibility
+      const questionStates = quizzes.map(()=>({ selectedIndex: null, showExplanation: false }));
+      // Stable shuffled option orders per question (store indices)
+      const optionOrder = quizzes.map(q => {
+        const idxs = q.options.map((_, i)=>i);
+        return shuffleArray(idxs);
+      });
 
-      function renderCurrentQuiz() {
+      let currentQuizIndex = 0;
+
+      const quizContainer = document.createElement('div');
+      quizContainer.id = 'current-quiz';
+      wrap.appendChild(quizContainer);
+
+      const navBar = document.createElement('div');
+      navBar.style.display = 'flex';
+      navBar.style.justifyContent = 'space-between';
+      navBar.style.alignItems = 'center';
+      navBar.style.marginTop = '10px';
+
+      const prevQ = document.createElement('button');
+      prevQ.className = 'btn ghost';
+      prevQ.textContent = currentLang==='ar' ? '◀ السؤال السابق' : '◀ Previous Question';
+      prevQ.addEventListener('click', ()=>{
+        if(currentQuizIndex>0){ currentQuizIndex--; renderCurrentQuiz(); }
+      });
+
+      const counter = document.createElement('span');
+      counter.style.color = 'var(--muted)';
+      counter.style.fontSize = '12px';
+
+      const nextQ = document.createElement('button');
+      nextQ.className = 'btn ghost';
+      nextQ.textContent = currentLang==='ar' ? 'السؤال التالي ▶' : 'Next Question ▶';
+      nextQ.addEventListener('click', ()=>{
+        if(currentQuizIndex<quizzes.length-1){ currentQuizIndex++; renderCurrentQuiz(); }
+      });
+
+      navBar.appendChild(prevQ);
+      navBar.appendChild(counter);
+      navBar.appendChild(nextQ);
+      wrap.appendChild(navBar);
+
+      function renderCurrentQuiz(){
         const quiz = quizzes[currentQuizIndex];
-        const quizContainer = document.getElementById('current-quiz') || document.createElement('div');
-        quizContainer.id = 'current-quiz';
+        const state = questionStates[currentQuizIndex];
         quizContainer.innerHTML = '';
 
         const questionDiv = document.createElement('div');
-        questionDiv.innerHTML = `<strong>Question ${currentQuizIndex + 1}:</strong> ${quiz.prompt}`;
+        const qLabel = currentLang==='ar' ? 'السؤال' : 'Question';
+        questionDiv.innerHTML = `<strong>${qLabel} ${currentQuizIndex + 1}:</strong> ${quiz.prompt}`;
         questionDiv.style.marginBottom = '10px';
         quizContainer.appendChild(questionDiv);
 
-        const shuffledOptions = shuffleArray(quiz.options);
-        shuffledOptions.forEach((opt) => {
+        // Render options using stable shuffled order
+        optionOrder[currentQuizIndex].forEach((optIdx, renderIdx) => {
+          const opt = quiz.options[optIdx];
           const optionDiv = document.createElement('div');
           optionDiv.className = 'option';
           optionDiv.textContent = opt.text;
           optionDiv.addEventListener('click', () => {
-            if (answered) return;
-            answered = true;
-            
-            // Show result for all options
-            shuffledOptions.forEach((o, i) => {
-              const optEl = quizContainer.children[i + 1];
-              if (o.correct) {
-                optEl.classList.add('correct');
-                optEl.innerHTML = `${o.text} <span class='badge ok'>correct</span>`;
-              } else {
-                optEl.classList.add('wrong');
-              }
-            });
+            // Allow changing selection anytime
+            state.selectedIndex = renderIdx;
+            state.showExplanation = true;
+            // Re-render to apply classes and explanation
+            renderCurrentQuiz();
+          });
+          quizContainer.appendChild(optionDiv);
+        });
 
-            // Show explanation
+        // If answered, decorate options and show explanation
+        if (state.selectedIndex !== null) {
+          const renderCount = optionOrder[currentQuizIndex].length;
+          for (let i = 0; i < renderCount; i++) {
+            const optIdx = optionOrder[currentQuizIndex][i];
+            const isCorrect = quizzes[currentQuizIndex].options[optIdx].correct;
+            const optEl = quizContainer.children[i + 1]; // +1 skips the questionDiv
+            if (isCorrect) {
+              optEl.classList.add('correct');
+              optEl.innerHTML = `${quizzes[currentQuizIndex].options[optIdx].text} <span class='badge ok'>${currentLang==='ar'?'صحيح':'correct'}</span>`;
+            } else {
+              optEl.classList.add('wrong');
+            }
+          }
+
+          if (state.showExplanation) {
             const explanation = document.createElement('div');
             explanation.style.marginTop = '10px';
             explanation.style.padding = '10px';
             explanation.style.backgroundColor = 'rgba(100, 255, 218, 0.1)';
             explanation.style.borderRadius = '8px';
             explanation.style.fontSize = '14px';
-            explanation.innerHTML = `<strong>Explanation:</strong> ${quiz.explanation}`;
+            explanation.innerHTML = `<strong>${currentLang==='ar'?'تفسير:':'Explanation:'}</strong> ${quiz.explanation}`;
             quizContainer.appendChild(explanation);
-
-            // Add next question button if more questions exist
-            if (currentQuizIndex < quizzes.length - 1) {
-              const nextBtn = document.createElement('button');
-              nextBtn.className = 'btn ghost';
-              nextBtn.textContent = 'Next Question';
-              nextBtn.style.marginTop = '10px';
-              nextBtn.addEventListener('click', () => {
-                currentQuizIndex++;
-                answered = false;
-                renderCurrentQuiz();
-              });
-              quizContainer.appendChild(nextBtn);
-            } else {
-              const doneDiv = document.createElement('div');
-              doneDiv.style.marginTop = '10px';
-              doneDiv.style.fontWeight = 'bold';
-              doneDiv.style.color = 'var(--accent2)';
-              doneDiv.textContent = 'Quiz completed! 🎉';
-              quizContainer.appendChild(doneDiv);
-            }
-          });
-          quizContainer.appendChild(optionDiv);
-        });
-
-        if (!wrap.contains(quizContainer)) {
-          wrap.appendChild(quizContainer);
+          }
         }
+
+        // Update nav state
+        counter.textContent = currentLang==='ar'
+          ? `سؤال ${currentQuizIndex + 1} من ${quizzes.length}`
+          : `Question ${currentQuizIndex + 1} of ${quizzes.length}`;
+        prevQ.disabled = currentQuizIndex === 0;
+        nextQ.disabled = currentQuizIndex === quizzes.length - 1;
       }
 
       renderCurrentQuiz();
@@ -549,11 +726,11 @@
     function qaNode(list){
       const wrap = document.createElement('div');
       wrap.className = 'qa card';
-      const t = document.createElement('h3'); t.textContent = 'Check Yourself (Q&A)'; wrap.appendChild(t);
+      const t = document.createElement('h3'); t.textContent = currentLang==='ar' ? 'أسئلة وإجابات' : 'Check Yourself (Q&A)'; wrap.appendChild(t);
       list.forEach(item=>{
-        const q = document.createElement('div'); q.className='q'; q.textContent = 'Q: '+item.q; wrap.appendChild(q);
-        const a = document.createElement('div'); a.className='ans'; a.textContent = 'A: '+item.a; wrap.appendChild(a);
-        const btn = document.createElement('button'); btn.className='reveal'; btn.textContent='Reveal answer';
+        const q = document.createElement('div'); q.className='q'; q.textContent = (currentLang==='ar'?'س: ':'Q: ')+item.q; wrap.appendChild(q);
+        const a = document.createElement('div'); a.className='ans'; a.textContent = (currentLang==='ar'?'ج: ':'A: ')+item.a; wrap.appendChild(a);
+        const btn = document.createElement('button'); btn.className='reveal'; btn.textContent=(currentLang==='ar'?'إظهار الإجابة':'Reveal answer');
         btn.addEventListener('click', ()=>{ a.style.display = (a.style.display==='block'?'none':'block') });
         wrap.appendChild(btn);
       });
@@ -569,6 +746,7 @@
 
     function renderSlide(){
       const s = spec.sections[index];
+      const L = getLocalizedSection(s.id);
       
       // Update pill with progress
       const progress = `Section ${index + 1} of ${spec.sections.length} • ~${s.time_hint || `${s.time}m`}`;
@@ -582,29 +760,29 @@
       
       // Header
       const h2 = document.createElement('h2'); 
-      h2.textContent = `${index+1}. ${s.title}`; 
+      h2.textContent = `${index+1}. ${L.title}`; 
       slide.appendChild(h2);
       
       const lead = document.createElement('p'); 
       lead.className='lead'; 
-      lead.textContent = s.headline; 
+      lead.textContent = L.headline || s.headline; 
       slide.appendChild(lead);
 
       // Content section (new markdown content)
-      if (s.content) {
+      if (L.content || s.content) {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'content';
         contentDiv.style.marginBottom = '20px';
-        contentDiv.innerHTML = renderMarkdown(s.content);
+        contentDiv.innerHTML = renderMarkdown(L.content || s.content);
         slide.appendChild(contentDiv);
       }
 
       // Diagram section (collapsible)
-      if (s.diagram) {
+      if (L.diagram || s.diagram) {
         const diagramDetails = document.createElement('details');
         diagramDetails.style.marginBottom = '20px';
         const diagramSummary = document.createElement('summary'); 
-        diagramSummary.textContent = '📊 Illustration / Diagram'; 
+        diagramSummary.textContent = currentLang==='ar' ? '📊 رسم توضيحي' : '📊 Illustration / Diagram'; 
         diagramSummary.style.cursor = 'pointer';
         diagramSummary.style.fontWeight = 'bold';
         diagramSummary.style.marginBottom = '10px';
@@ -618,7 +796,7 @@
         diagramBody.style.fontSize = '13px';
         diagramBody.style.whiteSpace = 'pre-line';
         diagramBody.style.color='var(--muted)'; 
-        diagramBody.textContent = s.diagram; 
+        diagramBody.textContent = (L.diagram || s.diagram); 
         diagramDetails.appendChild(diagramBody);
         slide.appendChild(diagramDetails);
       }
@@ -631,21 +809,21 @@
       const left = document.createElement('div'); 
       left.className='stack'; 
       grid.appendChild(left);
-      left.appendChild(listNode('Key Points', s.bullets));
-      if(s.examples && s.examples.length){ 
-        left.appendChild(listNode('Examples', s.examples)); 
+      left.appendChild(listNode(currentLang==='ar'?'نقاط أساسية':'Key Points', L.bullets || s.bullets));
+      if((L.examples||s.examples) && (L.examples||s.examples).length){ 
+        left.appendChild(listNode(currentLang==='ar'?'أمثلة':'Examples', L.examples || s.examples)); 
       }
 
       // Right column: Q&A + Quiz
       const right = document.createElement('div'); 
       grid.appendChild(right);
 
-      if(s.qa && s.qa.length){ 
-        right.appendChild(qaNode(s.qa)); 
+      if((L.qa||s.qa) && (L.qa||s.qa).length){ 
+        right.appendChild(qaNode(L.qa || s.qa)); 
       }
       
       // Handle both old 'quiz' format and new 'quizzes' format
-      const quizData = s.quizzes || (s.quiz ? [s.quiz] : null);
+      const quizData = (L.quizzes || s.quizzes) || (s.quiz ? [s.quiz] : null);
       if(quizData && quizData.length){ 
         right.appendChild(quizNode(quizData)); 
       }
@@ -755,6 +933,11 @@
           e.preventDefault();
           toggleTheme();
           break;
+        case 'l':
+        case 'L':
+          e.preventDefault();
+          setLang(currentLang==='ar'?'en':'ar');
+          break;
         case 'r':
         case 'R':
           e.preventDefault();
@@ -762,6 +945,8 @@
           break;
       }
     });
+
+    langBtn.addEventListener('click', ()=> setLang(currentLang==='ar'?'en':'ar'));
 
     // Save spec to localStorage
     function saveSpecToLocalStorage() {
@@ -804,6 +989,7 @@
     renderSlide();
     addAriaLabels();
     initTheme();
+    setLang(currentLang);
     
     // Save current spec to localStorage on any navigation
     const originalGoToPrevious = goToPrevious;
@@ -819,12 +1005,20 @@
       saveSpecToLocalStorage();
     };
 
-    // Update footer with keyboard shortcuts
-    const footer = document.querySelector('footer');
-    footer.innerHTML = `
-      <strong>Navigation:</strong> Use ← → arrow keys or Next/Prev buttons to navigate. 
-      Press <strong>T</strong> to toggle theme. Press <strong>R</strong> to reveal all answers on current slide. 
-    `;
+    // Footer (localized)
+    function updateFooter(){
+      if(currentLang==='ar'){
+        footer.innerHTML = `
+          <strong>التنقّل:</strong> استخدم مفاتيح ← → أو الأزرار السابقة/التالي. 
+          اضغط <strong>T</strong> لتغيير الوضع. اضغط <strong>R</strong> لإظهار كل الإجابات في الشريحة الحالية.
+        `;
+      } else {
+        footer.innerHTML = `
+          <strong>Navigation:</strong> Use ← → arrow keys or Next/Prev buttons to navigate. 
+          Press <strong>T</strong> to toggle theme. Press <strong>R</strong> to reveal all answers on current slide.
+        `;
+      }
+    }
 
     // Theme logic
     function applyTheme(theme){
@@ -842,11 +1036,55 @@
     }
 
     function toggleTheme(){
+      console.log('toggleTheme called!');
       const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      console.log('Current theme:', current);
       applyTheme(current === 'light' ? 'dark' : 'light');
     }
 
-    themeBtn.addEventListener('click', toggleTheme);
+    // Alternative approach - use onclick directly
+    if (themeBtn) {
+      console.log('Setting up theme button with onclick...');
+      themeBtn.onclick = function(e) {
+        console.log('ONCLICK FIRED!', e);
+        toggleTheme();
+        return false;
+      };
+      
+      // Also try the old way
+      themeBtn.addEventListener('click', function(e) {
+        console.log('addEventListener click fired!', e);
+        toggleTheme();
+      });
+      
+      // Test all possible ways to detect interaction
+      themeBtn.addEventListener('mousedown', function(e) {
+        console.log('Mouse down detected!', e);
+      });
+      
+      themeBtn.addEventListener('touchstart', function(e) {
+        console.log('Touch start detected!', e);
+        toggleTheme();
+      });
+      
+      console.log('All event handlers attached to:', themeBtn);
+      
+    } else {
+      console.error('Theme button not found!');
+    }
+    
+    // Fallback delegation in case an overlay intercepts direct button clicks
+    document.addEventListener('click', (ev)=>{
+      console.log('Document click:', ev.target);
+      const t = ev.target;
+      if(!t) return;
+      const btn = (t.id === 'themeBtn') ? t : (t.closest ? t.closest('#themeBtn') : null);
+      if(btn){
+        console.log('Fallback delegation triggered!');
+        ev.preventDefault();
+        toggleTheme();
+      }
+    }, true);
   </script>
 </body>
 </html>
